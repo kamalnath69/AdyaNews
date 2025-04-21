@@ -26,12 +26,14 @@ const ArticleCard = ({ article, currentCategory = 'general' }) => {
         await dispatch(unsaveArticle(id)).unwrap();
       } else {
         // Pass current category when saving
+        const nonStandardCategories = ['trending', 'recommended', 'latest'];
         const articleWithCategory = {
           ...article,
-          category: currentCategory !== 'trending' && currentCategory !== 'recommended' 
+          category: !nonStandardCategories.includes(currentCategory)
             ? currentCategory 
-            : 'general' // Use general for trending/recommended tabs
+            : 'general'
         };
+        
         await dispatch(saveArticle(articleWithCategory)).unwrap();
       }
       setSavingStatus('idle');

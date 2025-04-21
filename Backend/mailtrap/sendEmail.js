@@ -2,7 +2,7 @@ import { transporter } from "./nodemailer.config.js";
 
 export const sendVerificationEmail = async (to, verificationCode) => {
     const mailOptions = {
-        from: `"Your App Team" <${process.env.EMAIL_USER}>`, // Sender address
+        from: `"AdyaNews" <${process.env.EMAIL_USER}>`, // Sender address
         to, // Recipient email
         subject: "Verify Your Email", // Subject line
         html: `
@@ -11,7 +11,7 @@ export const sendVerificationEmail = async (to, verificationCode) => {
             <h2>${verificationCode}</h2>
             <p>Enter this code on the verification page to complete your registration.</p>
             <p>This code will expire in 15 minutes.</p>
-            <p>Best regards,<br>Your App Team</p>
+            <p>Best regards,<br>AdyaNews</p>
         `,
     };
 

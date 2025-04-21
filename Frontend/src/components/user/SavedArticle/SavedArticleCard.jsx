@@ -18,8 +18,11 @@ const SavedArticleCard = ({ article }) => {
   
   const dispatch = useDispatch();
   
+  // Extract article ID consistently
+  console.log('content debug saved articleee', article);
+  const articleId = article.id || article.articleId || article._id;
+  
   const { 
-    articleId, 
     title, 
     source, 
     publishDate, 

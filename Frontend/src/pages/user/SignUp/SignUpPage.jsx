@@ -5,92 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { NewspaperIcon, UserIcon, MailIcon, LockIcon, ArrowRightIcon } from "lucide-react";
 import { signup } from "../../../redux/authSlice";
 import PasswordStrengthMeter from "../../../components/auth/PasswordStrengthMeter";
-import axios from "axios";
 import toast from "react-hot-toast";
-
-const NEWS_API_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:5000/api/public/news"
-    : "https://adyanewsbackend.onrender.com/api/public/news";
-
-const CARD_SIZE = 120;
-const CARD_WIDTH = 240;
-const CARD_HEIGHT = 140;
-
-const SEARCH_KEYWORDS = [
-  "technology", "business", "health", "science", "sports", "world", "india", "ai", "finance", "startup", "education", "climate", "entertainment"
-];
-
-const CARD_COLORS = [
-  "bg-gradient-to-br from-[#e0e7ff] via-[#f1f5f9] to-[#bae6fd]",
-  "bg-gradient-to-br from-[#fce7f3] via-[#f3e8ff] to-[#f1f5f9]",
-  "bg-gradient-to-br from-[#fef9c3] via-[#f1f5f9] to-[#bbf7d0]",
-  "bg-gradient-to-br from-[#f1f5f9] via-[#e0e7ff] to-[#f3e8ff]",
-  "bg-gradient-to-br from-[#f1f5f9] via-[#fef9c3] to-[#f3e8ff]",
-  "bg-gradient-to-br from-[#f1f5f9] via-[#bae6fd] to-[#fce7f3]",
-  "bg-gradient-to-br from-[#f1f5f9] via-[#bbf7d0] to-[#e0e7ff]",
-  "bg-gradient-to-br from-[#f3e8ff] via-[#f1f5f9] to-[#fef9c3]",
-];
-
-// Generate random positions for cards to fill the screen (no overlap, best effort)
-function getInitialCardPositions(count, formRect) {
-  const positions = [];
-  const tries = 100;
-  const padding = 16;
-  const minDist = CARD_WIDTH * 0.85;
-
-  for (let i = 0; i < count; i++) {
-    let placed = false;
-    for (let t = 0; t < tries && !placed; t++) {
-      // Avoid the center form area
-      let left = Math.random() * (window.innerWidth - CARD_WIDTH - padding * 2) + padding;
-      let top = Math.random() * (window.innerHeight - CARD_HEIGHT - padding * 2) + padding;
-
-      // Avoid form area
-      if (formRect) {
-        const overlapX =
-          left + CARD_WIDTH > formRect.left - 24 &&
-          left < formRect.right + 24;
-        const overlapY =
-          top + CARD_HEIGHT > formRect.top - 24 &&
-          top < formRect.bottom + 24;
-        if (overlapX && overlapY) continue;
-      }
-
-      // Avoid overlap with other cards
-      let collision = false;
-      for (let j = 0; j < positions.length; j++) {
-        const dx = positions[j].left - left;
-        const dy = positions[j].top - top;
-        if (Math.sqrt(dx * dx + dy * dy) < minDist) {
-          collision = true;
-          break;
-        }
-      }
-      if (!collision) {
-        positions.push({
-          left,
-          top,
-          rotate: (Math.random() - 0.5) * 20,
-          vx: 0,
-          vy: 0,
-        });
-        placed = true;
-      }
-    }
-    // If not placed after tries, just push somewhere
-    if (!placed) {
-      positions.push({
-        left: Math.random() * (window.innerWidth - CARD_WIDTH - padding * 2) + padding,
-        top: Math.random() * (window.innerHeight - CARD_HEIGHT - padding * 2) + padding,
-        rotate: (Math.random() - 0.5) * 20,
-        vx: 0,
-        vy: 0,
-      });
-    }
-  }
-  return positions;
-}
+import { 
+  fetchPublicNews,
+  getInitialCardPositions,
+  CARD_COLORS,
+  CARD_WIDTH,
+  CARD_HEIGHT 
+} from "../../../utils/newsUtils";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -107,26 +29,17 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
-  // Only two fetches for news
+  // Fetch news using the utility function
   useEffect(() => {
     let mounted = true;
-    const fetchNews = async () => {
-      let allArticles = [];
-      for (let i = 0; i < 2; i++) {
-        const keyword = SEARCH_KEYWORDS[Math.floor(Math.random() * SEARCH_KEYWORDS.length)];
-        try {
-          const res = await axios.get(`${NEWS_API_URL}?q=${keyword}`, { withCredentials: false });
-          const articles = res.data.articles || res.data || [];
-          allArticles = allArticles.concat(articles.slice(0, 10));
-        } catch {}
-      }
-      if (mounted) setNews(allArticles.slice(0, 16));
+    
+    const getNews = async () => {
+      const articles = await fetchPublicNews(2, 16);
+      if (mounted) setNews(articles);
     };
-    fetchNews();
-    // Only fetch on mount
-    return () => {
-      mounted = false;
-    };
+    
+    getNews();
+    return () => { mounted = false; };
   }, []);
 
   // Get form rect for physics
@@ -268,6 +181,12 @@ const SignUpPage = () => {
           {news.map((article, idx) => {
             const card = positions[idx] || { left: 50, top: 50, rotate: 0 };
             const color = CARD_COLORS[idx % CARD_COLORS.length];
+            
+            // Hide some cards on mobile
+            const isVisibleOnMobile = idx < 6;
+            // Hide more cards on tablet
+            const isVisibleOnTablet = idx < 10;
+            
             return (
               <motion.div
                 key={article.title + idx}
@@ -284,7 +203,9 @@ const SignUpPage = () => {
                   boxShadow: "0 8px 32px 0 rgba(80, 120, 255, 0.18)",
                   zIndex: 30,
                 }}
-                className={`absolute ${color} shadow-xl border border-primary-100 rounded-2xl flex flex-col items-stretch justify-between overflow-hidden cursor-pointer transition-all backdrop-blur-[2px]`}
+                className={`absolute ${color} shadow-xl border border-primary-100 rounded-2xl flex flex-col items-stretch justify-between overflow-hidden cursor-pointer transition-all backdrop-blur-[2px]
+                  ${isVisibleOnMobile ? '' : 'hidden sm:flex'} 
+                  ${isVisibleOnTablet ? '' : 'hidden md:flex'}`}
                 style={{
                   width: CARD_WIDTH,
                   height: CARD_HEIGHT,
@@ -355,7 +276,7 @@ const SignUpPage = () => {
       {/* Signup Card - centered */}
       <div
         ref={formRef}
-        className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-8 py-8 flex flex-col justify-center mx-auto my-12"
+        className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-4 sm:px-6 md:px-8 py-6 md:py-8 flex flex-col justify-center mx-4 sm:mx-auto my-8 sm:my-12"
         style={{
           background: "rgba(255,255,255,0.55)",
           backdropFilter: "blur(18px) saturate(1.5)",
@@ -370,8 +291,8 @@ const SignUpPage = () => {
             transition={{ delay: 0.1 }}
             className="flex items-center gap-2"
           >
-            <NewspaperIcon className="h-10 w-10 text-primary-500 drop-shadow-lg" />
-            <span className="text-3xl font-extrabold text-primary-500 tracking-tight drop-shadow-lg">AdyaNews</span>
+            <NewspaperIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary-500 drop-shadow-lg" />
+            <span className="text-2xl sm:text-3xl font-extrabold text-primary-500 tracking-tight drop-shadow-lg">AdyaNews</span>
           </motion.div>
           <h2 className="mt-3 text-xl font-bold text-neutral-900 text-center">
             Create your account
@@ -456,6 +377,7 @@ const SignUpPage = () => {
   );
 };
 
+// Reusable InputField component
 const InputField = ({ id, label, type = "text", value, onChange, icon, error }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium text-neutral-700 mb-1">

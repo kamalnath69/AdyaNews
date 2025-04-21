@@ -7,7 +7,7 @@ import {
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const mailOptions = {
-        from: `"Your App Team" <${process.env.EMAIL_USER}>`,
+        from: `"AdyaNews" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Verify Your Email",
         html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
@@ -24,7 +24,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
 
 export const sendWelcomeEmail = async (email, name) => {
     const mailOptions = {
-        from: `"Your App Team" <${process.env.EMAIL_USER}>`,
+        from: `"AdyaNews" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Welcome to Our App!",
         html: `<p>Hello ${name},</p><p>Welcome to our app! We're excited to have you on board.</p>`,
@@ -41,7 +41,7 @@ export const sendWelcomeEmail = async (email, name) => {
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
     const mailOptions = {
-        from: `"Your App Team" <${process.env.EMAIL_USER}>`,
+        from: `"AdyaNews" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Reset Your Password",
         html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
@@ -58,7 +58,7 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
 
 export const sendResetSuccessEmail = async (email) => {
     const mailOptions = {
-        from: `"Your App Team" <${process.env.EMAIL_USER}>`,
+        from: `"AdyaNews" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Password Reset Successful",
         html: PASSWORD_RESET_SUCCESS_TEMPLATE,
