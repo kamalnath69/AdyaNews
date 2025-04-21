@@ -1,5 +1,6 @@
 # AdyaNews - Personalized News Aggregation Platform
 
+![Screenshot (424)](https://github.com/user-attachments/assets/b4f8e636-3455-41f4-b5dc-6b9a3cf0d06f)
 ## 📱 Project Overview
 
 AdyaNews is a modern, feature-rich news aggregation platform designed to deliver personalized news content based on user interests. The application combines sleek UI design with powerful functionality to provide a seamless news reading experience.
@@ -175,4 +176,19 @@ AdyaNews/
 │       └── App.jsx             # Main App component
 ```
 
+### Screen Shots
+
+![Screenshot (435)](https://github.com/user-attachments/assets/8f4b4b36-5ecd-44d0-9ec4-efe4aa17e195)
+![Screenshot (433)](https://github.com/user-attachments/assets/99f7a59d-770b-4091-aeea-96cf62e7b0fc)
+![Screenshot (432)](https://github.com/user-attachments/assets/4a2f1bd2-ae89-4deb-a4cc-f3bfc6bdf36d)
+![Screenshot (431)](https://github.com/user-attachments/assets/348c65e3-2f4d-4294-8ae3-60db03d163f4)
+![Screenshot (430)](https://github.com/user-attachments/assets/9f0bfc55-f29e-4e6f-b156-3f9603f43809)
+![Screenshot (429)](https://github.com/user-attachments/assets/b7e13990-c7b0-47f8-93bd-41d56c7bb37b)
+![Screenshot (428)](https://github.com/user-attachments/assets/1d5ae5a5-e6cf-41cb-b47d-581552c63c89)
+![Screenshot (427)](https://github.com/user-attachments/assets/09e764b9-beff-42eb-9983-ab9fbf18a540)
+![Screenshot (426)](https://github.com/user-attachments/assets/6b679929-abdc-4f56-8f26-2de2e79208f8)
+![Screenshot (425)](https://github.com/user-attachments/assets/4abec8dc-ca66-4716-82f3-406be87f67dc)
+![Screenshot (424)](https://github.com/user-attachments/assets/ce398437-a3d5-49b2-8e16-e0e5b1f50f59)
+![Screenshot (423)](https://github.com/user-attachments/assets/5132dfd8-49c6-4d4a-9cb8-44872329e969)
+![Screenshot (437)](https://github.com/user-attachments/assets/a7a7cbd4-4c1d-4eed-9be5-d9a3e8606b0e)
 
