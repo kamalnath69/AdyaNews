@@ -16,7 +16,7 @@ const SummaryModal = ({ article, onClose }) => {
     const API_URL =
       import.meta.env.MODE === "development"
         ? "http://localhost:5000/api/article"
-        : "/api/article";
+        : "https://adyanewsbackend.onrender.com/api/article";
 
     axios
       .post(`${API_URL}/summarize`, { text: article.content })

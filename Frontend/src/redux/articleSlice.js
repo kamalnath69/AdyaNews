@@ -4,7 +4,7 @@ import axios from 'axios';
 // Add this helper function at the top of your file
 const DEFAULT_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij5ObyBJbWFnZSBBdmFpbGFibGU8L3RleHQ+PC9zdmc+';
 
-const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "/api";
+const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "https://adyanewsbackend.onrender.com/api";
 
 // Update the fetchArticles thunk
 export const fetchArticles = createAsyncThunk(

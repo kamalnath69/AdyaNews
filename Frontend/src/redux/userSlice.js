@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api/user" : "/api/user";
+const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api/user" : "https://adyanewsbackend.onrender.com/api/user";
 
 axios.defaults.withCredentials = true;
 

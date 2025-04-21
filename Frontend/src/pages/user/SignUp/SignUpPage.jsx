@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 const NEWS_API_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:5000/api/public/news"
-    : "/api/public/news";
+    : "https://adyanewsbackend.onrender.com/api/public/news";
 
 const CARD_SIZE = 120;
 const CARD_WIDTH = 240;

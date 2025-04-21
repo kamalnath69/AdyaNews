@@ -19,7 +19,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://adyanews.onrender.com",
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser()); // allows us to parse incoming cookies
