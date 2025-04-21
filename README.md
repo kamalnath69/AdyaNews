@@ -84,7 +84,7 @@ export const summarizeArticle = async (req, res) => {
 ### Setup Instructions
 1. Clone the repository:
 ```markdown
-git clone https://github.com/yourusername/adya-news.git
+git clone https://github.com/kamalnath69/AdyaNews.git
 cd AdyaNews
 ```
 
