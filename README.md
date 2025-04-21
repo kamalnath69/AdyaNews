@@ -85,7 +85,7 @@ export const summarizeArticle = async (req, res) => {
 1. Clone the repository:
 ```markdown
 git clone https://github.com/yourusername/adya-news.git
-cd adya-news
+cd AdyaNews
 ```
 
 2. Install backend dependencies:
