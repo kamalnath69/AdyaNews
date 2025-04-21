@@ -6,6 +6,10 @@
 AdyaNews is a modern, feature-rich news aggregation platform designed to deliver personalized news content based on user interests. The application combines sleek UI design with powerful functionality to provide a seamless news reading experience.
 
 Built with React, Redux, and a Node.js backend, AdyaNews offers personalized content delivery, article saving and categorization, comprehensive admin controls, and robust user management.
+### 🔗 Live Hosted Link: 
+https://adyanews.onrender.com  
+### 📷 Drive Link (Screenshots +  Video Demo): 
+https://drive.google.com/drive/folders/1XGLxyR1fP9jALMdMeBmE0p-hoNh_Wvdj?usp=sharing
 
 ## ✨ Key Features
 
