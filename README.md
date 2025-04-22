@@ -1,11 +1,12 @@
-# AdyaNews - Personalized News Aggregation Platform
+# AdyaNews - Personalized News Aggregation Platform with AI
 
 ![Screenshot (424)](https://github.com/user-attachments/assets/b4f8e636-3455-41f4-b5dc-6b9a3cf0d06f)
 ## 📱 Project Overview
 
-AdyaNews is a modern, feature-rich news aggregation platform designed to deliver personalized news content based on user interests. The application combines sleek UI design with powerful functionality to provide a seamless news reading experience.
+AdyaNews is a modern, feature-rich news aggregation platform designed to deliver personalized news content based on user interests. The application combines sleek UI design with powerful functionality to provide a seamless news reading experience, enhanced by advanced AI capabilities. Users benefit from AI-powered article summarization, sentiment analysis, and key points extraction that help distill lengthy content into digestible insights. The AI integration also enables content recommendations based on reading patterns and preferences, creating a truly personalized news ecosystem.
 
-Built with React, Redux, and a Node.js backend, AdyaNews offers personalized content delivery, article saving and categorization, comprehensive admin controls, and robust user management.
+Built with React, Redux, and a Node.js backend, AdyaNews offers personalized content delivery, article saving and categorization, comprehensive admin controls, and robust user management, all enhanced by cutting-edge AI technology powered by the Groq API.
+
 ### 🔗 Live Hosted Link: 
 https://adyanews.onrender.com  
 ### 📷 Drive Link (Screenshots +  Video Demo): 
@@ -109,7 +110,7 @@ npm install
 npm run dev
 ```
 
-5. Start frontend server: Open new terminal
+5. Start Backend server: Open new terminal
 ```markdown
 cd Backend
 node index.js
@@ -131,53 +132,75 @@ GROQ_API_KEY=your_groq_api_key
 
 ### Project Structure
 
-```markdown
+```
 AdyaNews/
-│   ├── Backend/                # Backend code
-│   │   ├── controllers/        # Route controllers
-│   │   │   ├── admin.controller.js
-│   │   │   ├── article.controller.js
-│   │   │   ├── auth.controller.js
-│   │   │   └── user.controller.js
-│   │   ├── middleware/         # Express middleware
-│   │   │   ├── verifyAdmin.js
-│   │   │   └── verifyToken.js
-│   │   ├── models/             # MongoDB schemas
-│   │   │   ├── savedArticle.model.js
-│   │   │   └── user.model.js
-│   │   └── routes/             # API routes
-│   │       ├── admin.route.js
-│   │       ├── article.route.js
-│   │       ├── auth.route.js
-│   │       └── user.route.js
-│   └── index.js                # Entry point
+├── Backend/                # Backend code
+│   ├── controllers/        # Route controllers
+│   │   ├── admin.controller.js
+│   │   ├── article.controller.js
+│   │   ├── auth.controller.js
+│   │   └── user.controller.js
+│   ├── mailtrap/          # Email functionality
+│   │   └── emails.js
+│   ├── middleware/        # Express middleware
+│   │   ├── auth.js
+│   │   ├── verifyAdmin.js
+│   │   └── verifyToken.js
+│   ├── models/            # MongoDB schemas
+│   │   ├── savedArticle.model.js
+│   │   └── user.model.js
+│   ├── routes/            # API routes
+│   │   ├── admin.route.js
+│   │   ├── article.route.js
+│   │   ├── auth.route.js
+│   │   └── user.route.js
+│   ├── utils/             # Utility functions
+│   │   └── generateTokenAndSetCookie.js
+│   ├── .env               # Environment variables
+│   ├── index.js           # Entry point
+│   └── package.json       # Backend dependencies
 │
-├── Frontend/                    # Frontend code
-│   ├── public/                 # Static assets
-│   └── src/
-│       ├── components/         # Reusable components
-│       │   ├── admin/          # Admin components
-│       │   ├── auth/           # Authentication components
-│       │   └── user/           # User interface components
-│       ├── pages/              # Page components
-│       │   ├── admin/          # Admin pages
-│       │   │   ├── Analytics/
-│       │   │   ├── Content/
-│       │   │   ├── Dashboard/
-│       │   │   └── UserManagement/
-│       │   └── user/           # User pages
-│       │       ├── Article/
-│       │       ├── Home/
-│       │       ├── Login/
-│       │       ├── Profile/
-│       │       └── SavedArticles/
-│       ├── redux/              # Redux state management
-│       │   ├── adminSlice.js
-│       │   ├── articleSlice.js
-│       │   ├── authSlice.js
-│       │   ├── store.js
-│       │   └── userSlice.js
-│       └── App.jsx             # Main App component
+└── Frontend/              # Frontend code
+    ├── public/            # Static assets
+    │   ├── _redirects     # Netlify/Render redirects
+    │   └── routes.json    # Routes configuration
+    ├── src/
+    │   ├── components/    # Reusable components
+    │   │   ├── admin/     # Admin components
+    │   │   ├── auth/      # Authentication components
+    │   │   └── user/      # User interface components
+    │   │       ├── Article/
+    │   │       ├── SavedArticle/
+    │   │       └── SummaryModal.jsx
+    │   ├── pages/         # Page components
+    │   │   ├── admin/     # Admin pages
+    │   │   │   ├── Analytics/
+    │   │   │   ├── Content/
+    │   │   │   ├── Dashboard/
+    │   │   │   └── UserManagement/
+    │   │   └── user/      # User pages
+    │   │       ├── Article/
+    │   │       ├── Home/
+    │   │       ├── Login/
+    │   │       ├── Profile/
+    │   │       ├── Settings/
+    │   │       └── SavedArticles/
+    │   ├── redux/         # Redux state management
+    │   │   ├── adminSlice.js
+    │   │   ├── articleSlice.js
+    │   │   ├── authSlice.js
+    │   │   ├── store.js
+    │   │   └── userSlice.js
+    │   ├── utils/         # Utility functions
+    │   │   └── apiClient.js
+    │   ├── App.jsx        # Main App component
+    │   ├── main.jsx       # Entry point
+    │   └── index.css      # Global styles
+    ├── .env               # Environment variables
+    ├── index.html         # HTML template
+    ├── package.json       # Frontend dependencies
+    ├── tailwind.config.js # Tailwind configuration
+    └── vite.config.js     # Vite configuration
 ```
 
 ### Screen Shots
