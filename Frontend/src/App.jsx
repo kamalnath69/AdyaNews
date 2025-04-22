@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import store from './redux/store';
 import { checkAuth } from './redux/authSlice';
 import { fetchSavedArticles, fetchArticleMetadata } from './redux/articleSlice';
