@@ -25,11 +25,10 @@ export const updateUserProfile = async (req, res) => {
         }
         
         // Extract fields from the request body
-        const { fullName, name, email, language, interests, notifications, phoneNumber, address, profilePhoto } = req.body;
+        const { name, email, language, interests, notifications, phoneNumber, address, profilePhoto } = req.body;
 
         // Create an update object with only the fields provided
         const updateFields = {};
-        if (fullName) updateFields.fullName = fullName;
         if (name) updateFields.name = name;
         if (email) updateFields.email = email;
         if (language) updateFields.language = language;

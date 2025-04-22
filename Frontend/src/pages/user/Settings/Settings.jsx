@@ -16,7 +16,7 @@ const Settings = () => {
   
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     language: 'en',
     interests: [],
@@ -43,7 +43,7 @@ const Settings = () => {
     if (user) {
       setFormData({
         // Use fullName or fall back to name if fullName isn't available
-        fullName:  user.name || '',
+        name:  user.name || '',
         email: user.email || '',
         language: user.language || 'en',
         interests: user.interests || [],
@@ -217,8 +217,8 @@ const Settings = () => {
                           </label>
                           <input
                             type="text"
-                            value={formData.fullName}
-                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                           />
                         </div>
