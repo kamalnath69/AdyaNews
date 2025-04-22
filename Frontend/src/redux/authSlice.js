@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import apiClient from "../utils/apiClient"; // Use the centralized API client
 
 const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "https://adyanewsbackend.onrender.com/api/auth";
-
-axios.defaults.withCredentials = true;
 
 // Async Thunks
 export const signup = createAsyncThunk("auth/signup", async ({ email, password, name }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/signup`, { email, password, name });
+        const response = await apiClient.post('/auth/signup', { email, password, name });
         return response.data.user;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error signing up");
@@ -17,7 +15,13 @@ export const signup = createAsyncThunk("auth/signup", async ({ email, password, 
 
 export const login = createAsyncThunk("auth/login", async ({ email, password }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, { email, password });
+        const response = await apiClient.post('/auth/login', { email, password });
+        
+        // Store token in localStorage
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+        }
+        
         return response.data.user;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error logging in");
@@ -26,16 +30,18 @@ export const login = createAsyncThunk("auth/login", async ({ email, password }, 
 
 export const logout = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
     try {
-        await axios.post(`${API_URL}/logout`);
+        await apiClient.post('/auth/logout');
+        localStorage.removeItem('token');
         return null;
     } catch (error) {
+        localStorage.removeItem('token'); // Still remove token even if API fails
         return rejectWithValue("Error logging out");
     }
 });
 
 export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API_URL}/check-auth`);
+        const response = await apiClient.get('/auth/check-auth');
         return response.data.user;
     } catch {
         return rejectWithValue(null);
@@ -44,7 +50,7 @@ export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, { rejectWi
 
 export const verifyEmail = createAsyncThunk("auth/verifyEmail", async (code, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/verify-email`, { code });
+        const response = await apiClient.post('/auth/verify-email', { code });
         return response.data.user;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error verifying email");
@@ -53,7 +59,7 @@ export const verifyEmail = createAsyncThunk("auth/verifyEmail", async (code, { r
 
 export const forgotPassword = createAsyncThunk("auth/forgotPassword", async (email, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/forgot-password`, { email });
+        const response = await apiClient.post('/auth/forgot-password', { email });
         return response.data.message;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error sending reset password email");
@@ -62,7 +68,7 @@ export const forgotPassword = createAsyncThunk("auth/forgotPassword", async (ema
 
 export const resetPassword = createAsyncThunk("auth/resetPassword", async ({ token, password }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
+        const response = await apiClient.post(`/auth/reset-password/${token}`, { password });
         return response.data.message;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error resetting password");

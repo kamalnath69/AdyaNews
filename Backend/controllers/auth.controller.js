@@ -9,6 +9,7 @@ import {
 	sendWelcomeEmail,
 } from "../mailtrap/emails.js";
 import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
@@ -39,21 +40,14 @@ export const signup = async (req, res) => {
 		await user.save();
 
 		// jwt
-		generateTokenAndSetCookie(res, user._id);
-
-		const token = res.token; // Assuming token is set in generateTokenAndSetCookie
-		res.cookie("token", token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production", // true in production
-			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // must be 'none' for cross-site
-			maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-		});
+		const token = generateTokenAndSetCookie(res, user._id);
 
 		await sendVerificationEmail(user.email, verificationToken);
 
 		res.status(201).json({
 			success: true,
 			message: "User created successfully",
+			token, // Add token to response
 			user: {
 				...user._doc,
 				password: undefined,
@@ -110,25 +104,32 @@ export const login = async (req, res) => {
 			return res.status(400).json({ success: false, message: "Invalid credentials" });
 		}
 
-		generateTokenAndSetCookie(res, user._id);
-
-		const token = res.token; // Assuming token is set in generateTokenAndSetCookie
-		res.cookie("token", token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production", // true in production
-			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // must be 'none' for cross-site
-			maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+		// Generate token
+		const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+			expiresIn: "30d",
 		});
 
-		user.lastLogin = new Date();
-		await user.save();
+		// Set cookie (still useful for same-domain)
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+			maxAge: 30 * 24 * 60 * 60 * 1000,
+		});
 
+		// Also return token in response body for localStorage
 		res.status(200).json({
 			success: true,
 			message: "Logged in successfully",
+			token, // Include token here
 			user: {
-				...user._doc,
-				password: undefined,
+				_id: user._id,
+				name: user.name,
+				email: user.email,
+				isVerified: user.isVerified,
+				role: user.role,
+				hasSelectedLanguage: user.language ? true : false,
+				hasSelectedInterests: user.interests && user.interests.length > 0,
 			},
 		});
 	} catch (error) {
