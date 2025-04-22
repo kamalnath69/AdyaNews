@@ -32,7 +32,6 @@ ${text}
 
     let result = {};
     try {
-      console.log("Raw response:", completion.choices[0].message.content);
       const raw = completion.choices[0].message.content;
       const match = raw.match(/```json\s*([\s\S]*?)```|({[\s\S]*})/i);
       const jsonString = match ? (match[1] || match[2]) : raw;
@@ -43,7 +42,7 @@ ${text}
 
     res.json(result);
   } catch (error) {
-    console.log("Error:", error);
+    console.error("Error:", error);
     res.status(500).json({ error: "Groq summarization failed" });
   }
 };
@@ -113,8 +112,6 @@ export const saveArticle = async (req, res) => {
         }
         
         // Create new saved article
-        console.log('content debug ', articleData.content);
-        console.log('title description ', articleData.description);
         const savedArticle =  new SavedArticle({
             userId,
             articleId: articleData.id,
@@ -177,8 +174,6 @@ export const toggleReadStatus = async (req, res) => {
         // Toggle the isRead status
         article.isRead = !article.isRead;
         await article.save();
-        
-        console.log(`Article ${articleId} read status toggled to: ${article.isRead}`);
         
         res.status(200).json({ 
             articleId,

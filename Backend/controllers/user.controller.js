@@ -3,9 +3,7 @@ import bcrypt from 'bcryptjs';
 
 // Fetch user profile
 export const getUserProfile = async (req, res) => {
-    console.log("Fetching user profile...");
     try {
-        console.log("req.user: ", req.userId);
         const userId = req.userId; // Assuming `req.user` is populated by an authentication middleware
         const user = await User.findById(userId).select("-password"); // Exclude the password field
         if (!user) {

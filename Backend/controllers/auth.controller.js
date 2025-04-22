@@ -20,7 +20,6 @@ export const signup = async (req, res) => {
 		}
 
 		const userAlreadyExists = await User.findOne({ email });
-		console.log("userAlreadyExists", userAlreadyExists);
 
 		if (userAlreadyExists) {
 			return res.status(400).json({ success: false, message: "User already exists" });
@@ -92,7 +91,7 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-	console.log("came to login");
+	
 	const { email, password } = req.body;
 	try {
 		const user = await User.findOne({ email });

@@ -19,7 +19,6 @@ const SavedArticleCard = ({ article }) => {
   const dispatch = useDispatch();
   
   // Extract article ID consistently
-  console.log('content debug saved articleee', article);
   const articleId = article.id || article.articleId || article._id;
   
   const { 
@@ -32,7 +31,6 @@ const SavedArticleCard = ({ article }) => {
     category = 'general',
     tags = []
   } = article;
-  console.log('content debug saved article', article);
   const formattedDate = formatDistanceToNow(new Date(publishDate), { addSuffix: true });
 
   const handleUnsave = async (e) => {
@@ -51,7 +49,6 @@ const SavedArticleCard = ({ article }) => {
     e.stopPropagation();
     setUpdatingRead(true);
     try {
-      console.log("Toggling read status for article:", articleId);
       const result = await dispatch(toggleReadStatus(articleId)).unwrap();
       console.log("Toggle result:", result);
     } catch (error) {

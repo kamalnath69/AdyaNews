@@ -92,8 +92,6 @@ app.get("/api/news/", verifyToken, async (req, res) => {
       .filter(term => term.trim())
       .join(' ') || 'latest';
 
-    console.log(`Query term: ${queryTerm}, Language: ${userLanguage} (${erLanguage})`);
-
     // Pass the language to fetchArticles
     let articles = await fetchArticles(queryTerm, page, pageSize, erLanguage);
     
@@ -130,8 +128,6 @@ app.get("/api/public/news/", async (req, res) => {
     const queryTerm = Object.values(query)
       .filter(term => term.trim())
       .join(' ') || 'latest';
-
-    console.log(`Public API - Query term: ${queryTerm}, Language: ${userLanguage} (${erLanguage})`);
 
     // Pass the language to fetchArticles
     let articles = await fetchArticles(queryTerm, page, pageSize, erLanguage);
@@ -190,9 +186,7 @@ async function fetchArticles(searchQuery, page = 1, pageSize = 9, language = "en
     // Return only the articles for the requested page
     const start = (page - 1) * pageSize;
     const result = articles.slice(start, start + pageSize);
-    
-    // Log the result to help with debugging
-    console.log(`Fetched ${result.length} articles for query "${searchQuery}"`);
+  
     
     return result;
   } catch (error) {

@@ -89,7 +89,6 @@ const Home = () => {
         if (isMounted && fetchRetries < 3) {
           setTimeout(() => {
             if (isMounted) {
-              console.log(`Retrying fetch (attempt ${fetchRetries + 1})...`);
               setFetchRetries(prev => prev + 1);
               fetchNewsArticles();
             }
@@ -127,7 +126,6 @@ const Home = () => {
                              currentPage < 25; // Limit to avoid excessive pagination
         
         if (shouldLoadMore) {
-          console.log(`Loading more articles, page ${currentPage + 1}`);
           dispatch(incrementPage());
           dispatch(fetchArticles({ 
             query: searchTerm, 

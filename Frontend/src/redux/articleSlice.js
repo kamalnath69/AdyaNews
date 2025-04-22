@@ -15,8 +15,6 @@ export const fetchArticles = createAsyncThunk(
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
       
-      console.log(`Fetching articles: query=${query}, topic=${topic}, page=${page}`);
-      
       const response = await axios.get(`${API_URL}/news`, {
         params: {
           q: query,

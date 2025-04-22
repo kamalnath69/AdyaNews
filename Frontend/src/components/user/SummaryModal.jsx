@@ -22,7 +22,7 @@ const SummaryModal = ({ article, onClose }) => {
     axios
       .post(`${API_URL}/summarize`, { text: article.content })
       .then(res => {
-        console.log('Summary response:', res.data);
+        
         setSummary({
           keyPoints: res.data.key_points || [],
           sentiment: res.data.sentiment || '',

@@ -34,15 +34,12 @@ const InterestSelection = () => {
       
       try {
         const profile = await dispatch(fetchProfile()).unwrap();
-        console.log('Profile fetched:', profile);
         if (isMounted.current && !hasNavigated.current) {
           if (profile?.hasSelectedInterests) {
-            console.log('Should navigate - hasSelectedInterests is true');
             hasNavigated.current = true; // Set flag before navigation
             // Use window.location for clean navigation instead of React Router
             window.location.href = '/';
           } else {
-            console.log('Not navigating - hasSelectedInterests is false');
             setLoading(false);
           }
         }
