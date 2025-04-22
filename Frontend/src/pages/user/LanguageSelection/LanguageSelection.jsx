@@ -78,7 +78,7 @@ const LanguageSelection = () => {
 
       if (isMounted.current) {
         // Force page reload instead of navigation
-        window.location.href = '/';  // This will reload the page and redirect to home
+        window.location.href = '/';  
       }
     } catch (err) {
       if (isMounted.current) {

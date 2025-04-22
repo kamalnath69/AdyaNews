@@ -205,7 +205,6 @@ const SavedArticleCard = ({ article }) => {
           )}
           
           <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
-            {/* Action buttons with visible labels */}
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleSummarize}
@@ -242,7 +241,7 @@ const SavedArticleCard = ({ article }) => {
         </div>
       </motion.div>
 
-      {/* Position the menus properly */}
+      {/* Category menu */}
       {showCategoryMenu && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={() => setShowCategoryMenu(false)}>
           <div className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>

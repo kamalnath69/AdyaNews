@@ -13,11 +13,6 @@ const ResetPasswordPage = () => {
     const { isLoading, error, message } = useSelector((state) => state.auth);
     const { token } = useParams();
     const navigate = useNavigate();
-    
-    // Add this console log to verify the token is captured
-    console.log("Reset password page loaded with token:", token);
-    
-    // Add this effect to prevent any immediate redirects
     useEffect(() => {
         // If loaded with token, we should stay on this page
         console.log("Reset password page mounted with token:", token);

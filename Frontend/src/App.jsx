@@ -20,8 +20,6 @@ import Article from './pages/user/Article/Article';
 import LoadingSpinner from './components/auth/LoadingSpinner';
 import OnboardingGuard from './components/user/OnboardingGuard';
 import LanguageSelection from './pages/user/LanguageSelection/LanguageSelection';
-
-// Admin components
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/Dashboard/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement/UserManagement';
@@ -75,18 +73,23 @@ function AppContent() {
       
       <main className="flex-grow relative z-10 min-h-screen flex flex-col bg-neutral-50">
         <Routes>
-          {/* Public routes - NO AUTH CHECKS */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/signup" element={
+            <RedirectAuthenticatedUser>
+              <SignUpPage />
+            </RedirectAuthenticatedUser>
+          } />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/forgot-password" element={
+            <RedirectAuthenticatedUser>
+              <ForgotPasswordPage />
+            </RedirectAuthenticatedUser>
+          } />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-          
           {/* Onboarding routes */}
           <Route path="/select-language" element={<LanguageSelection />} />
           <Route path="/select-interests" element={<InterestSelection />} />
-          
-          {/* Protected routes */}
+          {/* Main app routes, protected and onboarding-guarded */}
           <Route element={<OnboardingGuard />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/saved" element={
@@ -94,8 +97,31 @@ function AppContent() {
                 <SavedArticles />
               </ProtectedRoute>
             } />
-            {/* Other protected routes... */}
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/article/:id" element={
+              <ProtectedRoute>
+                <Article />
+              </ProtectedRoute>
+            } />
           </Route>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="content" element={<ContentManagement />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+          </Route>
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </>
