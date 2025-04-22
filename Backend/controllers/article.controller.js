@@ -101,27 +101,42 @@ export const saveArticle = async (req, res) => {
         const userId = req.userId;
         const articleData = req.body;
         
-        // Check if already saved
+        console.log("Received article data:", JSON.stringify(articleData, null, 2));
+        console.log("User ID:", userId);
+        
+        // Validate required fields
+        if (!articleData.id) {
+            return res.status(400).json({ message: "Article ID is required" });
+        }
+        
+        if (!articleData.title) {
+            return res.status(400).json({ message: "Article title is required" });
+        }
+        
+        // Check if already saved with safe string conversion
+        const articleId = String(articleData.id);
+        const userIdStr = String(userId);
+        
         const existing = await SavedArticle.findOne({ 
-            userId, 
-            articleId: articleData.id 
+            userId: userIdStr, 
+            articleId: articleId
         });
         
         if (existing) {
             return res.status(400).json({ message: "Article already saved" });
         }
         
-        // Create new saved article
-        const savedArticle =  new SavedArticle({
-            userId,
-            articleId: articleData.id,
+        // Create new saved article with safe defaults for all fields
+        const savedArticle = new SavedArticle({
+            userId: userIdStr,
+            articleId: articleId,
             title: articleData.title,
-            source: articleData.source,
-            publishDate: new Date(articleData.publishDate),
-            description: articleData.description,
-            content: articleData.content,
-            image: articleData.image,
-            tags: articleData.tags || [],
+            source: articleData.source || 'Unknown',
+            publishDate: articleData.publishDate ? new Date(articleData.publishDate) : new Date(),
+            description: articleData.description || '',
+            content: articleData.content || articleData.description || '',
+            image: articleData.image || '',
+            tags: Array.isArray(articleData.tags) ? articleData.tags : [],
             author: articleData.author || 'Unknown',
             readTime: articleData.readTime || '5 min read',
             category: articleData.category || 'general',
@@ -131,7 +146,8 @@ export const saveArticle = async (req, res) => {
         await savedArticle.save();
         res.status(201).json(savedArticle);
     } catch (error) {
-        console.error("Error saving article:", error);
+        console.error("Error saving article:", error.message);
+        console.error("Error stack:", error.stack);
         res.status(500).json({ message: "Error saving article" });
     }
 };
@@ -142,7 +158,12 @@ export const unsaveArticle = async (req, res) => {
         const userId = req.userId;
         const { articleId } = req.params;
         
-        const result = await SavedArticle.findOneAndDelete({ userId, articleId });
+        console.log("Attempting to unsave article:", articleId, "for user:", userId);
+        
+        const result = await SavedArticle.findOneAndDelete({ 
+            userId: userId.toString(), 
+            articleId: articleId.toString() 
+        });
         
         if (!result) {
             return res.status(404).json({ message: "Saved article not found" });
@@ -196,7 +217,11 @@ export const updateArticleCategory = async (req, res) => {
             return res.status(400).json({ message: "Category is required" });
         }
         
-        const article = await SavedArticle.findOne({ userId, articleId });
+        // Find article using string IDs
+        const article = await SavedArticle.findOne({ 
+            userId: userId.toString(), 
+            articleId: articleId.toString() 
+        });
         
         if (!article) {
             return res.status(404).json({ message: "Saved article not found" });

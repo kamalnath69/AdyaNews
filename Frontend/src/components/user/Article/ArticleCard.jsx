@@ -25,16 +25,28 @@ const ArticleCard = ({ article, currentCategory = 'general' }) => {
       if (saved) {
         await dispatch(unsaveArticle(id)).unwrap();
       } else {
-        // Pass current category when saving
-        const nonStandardCategories = ['trending', 'recommended', 'latest'];
-        const articleWithCategory = {
-          ...article,
-          category: !nonStandardCategories.includes(currentCategory)
-            ? currentCategory 
-            : 'general'
+        // Create a complete article object with all required fields
+        const articleToSave = {
+          id: id, // Ensure ID is present
+          title: title || "Untitled",
+          source: source || "Unknown Source",
+          publishDate: publishDate || new Date().toISOString(),
+          description: description || "",
+          // Make sure content exists
+          content: article.content || description || "",
+          image: image || "",
+          category: currentCategory !== 'latest' && 
+                   currentCategory !== 'trending' && 
+                   currentCategory !== 'recommended' 
+                   ? currentCategory : 'general',
+          // Add safe defaults
+          author: article.author || "Unknown",
+          tags: article.tags || [],
+          readTime: article.readTime || "3 min read"
         };
         
-        await dispatch(saveArticle(articleWithCategory)).unwrap();
+        console.log('Saving complete article:', articleToSave);
+        await dispatch(saveArticle(articleToSave)).unwrap();
       }
       setSavingStatus('idle');
     } catch (error) {

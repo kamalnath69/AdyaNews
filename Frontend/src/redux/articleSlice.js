@@ -75,33 +75,49 @@ export const fetchSavedArticles = createAsyncThunk(
   }
 );
 
-// Save an article
+// Improve error handling in the saveArticle thunk
+
 export const saveArticle = createAsyncThunk(
   'articles/saveArticle',
   async (article, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/article/save`, article, {
+      // Log the article being sent to the API
+      console.log('Sending article to save API:', article);
+      
+      // Ensure category is included and is a string
+      const articleToSave = {
+        ...article,
+        category: article.category || 'general'
+      };
+      
+      const response = await axios.post(`${API_URL}/article/save`, articleToSave, {
         withCredentials: true,
       });
-      return { article, savedArticle: response.data };
+      
+      console.log('Save article response:', response.data);
+      return { article: articleToSave, savedArticle: response.data };
     } catch (error) {
-      console.error('API Error:', error.response?.data || error.message);
+      console.error('API Error saving article:', error.response?.data || error.message);
       return rejectWithValue(error.response?.data?.message || 'Failed to save article');
     }
   }
 );
 
-// Unsave an article
+// Improve error handling in the unsaveArticle thunk
 export const unsaveArticle = createAsyncThunk(
   'articles/unsaveArticle',
   async (articleId, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API_URL}/article/unsave/${articleId}`, {
+      console.log('Attempting to unsave article with ID:', articleId);
+      
+      const response = await axios.delete(`${API_URL}/article/unsave/${articleId}`, {
         withCredentials: true,
       });
+      
+      console.log('Unsave article response:', response.data);
       return articleId;
     } catch (error) {
-      console.error('API Error:', error.response?.data || error.message);
+      console.error('API Error unsaving article:', error.response?.data || error.message);
       return rejectWithValue(error.response?.data?.message || 'Failed to unsave article');
     }
   }
