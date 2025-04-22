@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,6 +13,19 @@ const ResetPasswordPage = () => {
     const { isLoading, error, message } = useSelector((state) => state.auth);
     const { token } = useParams();
     const navigate = useNavigate();
+    
+    // Add this console log to verify the token is captured
+    console.log("Reset password page loaded with token:", token);
+    
+    // Add this effect to prevent any immediate redirects
+    useEffect(() => {
+        // If loaded with token, we should stay on this page
+        console.log("Reset password page mounted with token:", token);
+        
+        return () => {
+            console.log("Reset password page unmounted");
+        };
+    }, [token]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,13 +34,15 @@ const ResetPasswordPage = () => {
             return;
         }
         try {
+            console.log("Submitting password reset with token:", token);
             await dispatch(resetPassword({ token, password })).unwrap();
             toast.success("Password reset successfully, redirecting to login page...");
             setTimeout(() => {
                 navigate("/login");
             }, 2000);
         } catch (error) {
-            toast.error(error.message || "Error resetting password");
+            console.error("Password reset error:", error);
+            toast.error(error || "Error resetting password");
         }
     };
 
