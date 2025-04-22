@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchArticles, setSearchTerm, incrementPage, fetchSavedArticles } from '../../../redux/articleSlice';
-import { AlertCircleIcon, RefreshCwIcon, NewspaperIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { AlertCircleIcon, RefreshCwIcon, NewspaperIcon } from 'lucide-react';
 import SearchBar from '../../../components/user/Home/SearchBar';
 import ArticleGrid from '../../../components/user/Article/ArticleGrid';
 import FloatingActionButton from '../../../components/user/Home/FloatingActionButton';
 import ScrollToTop from '../../../components/user/Home/ScrollToTop';
-import noResultsIcon from '../../../assets/svg/no-results.svg';
 import SkeletonCard from '../../../components/user/Home/SkeletonCard';
 import Navbar from '../../../components/user/Navbar';
 import Footer from '../../../components/user/Footer';
@@ -221,35 +220,13 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Topic Tabs with scroll indicators */}
+        {/* Topic Tabs with simple scroll indicators */}
         <div className="container mx-auto px-4 mb-6 relative">
-          {/* Left scroll indicator */}
-          {showLeftScroll && (
-            <button 
-              onClick={() => scrollTopics('left')}
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-1 rounded-full shadow-md text-neutral-600 hover:bg-white transition-colors md:hidden"
-              aria-label="Scroll left"
-            >
-              <ChevronLeftIcon className="h-5 w-5" />
-            </button>
-          )}
-          
-          {/* Right scroll indicator */}
-          {showRightScroll && (
-            <button 
-              onClick={() => scrollTopics('right')}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-1 rounded-full shadow-md text-neutral-600 hover:bg-white transition-colors md:hidden"
-              aria-label="Scroll right"
-            >
-              <ChevronRightIcon className="h-5 w-5" />
-            </button>
-          )}
-
           {/* This wrapper handles centering on larger screens while allowing scroll on mobile */}
           <div className="flex justify-start md:justify-center">
             <div 
               ref={topicsScrollRef}
-              className="overflow-x-auto scrollbar-hide py-2 max-w-full"
+              className="overflow-x-auto scrollbar-hide py-2 max-w-full mb-1"
               onScroll={checkScrollPosition}
             >
               {/* On small screens: full width scrollable | On md+: flex centered */}
@@ -271,6 +248,31 @@ const Home = () => {
                 ))}
               </div>
             </div>
+          </div>
+          
+          {/* Simple arrow indicators below the topics */}
+          <div className="flex justify-between md:hidden mt-1 px-1">
+            {showLeftScroll && (
+              <button 
+                onClick={() => scrollTopics('left')}
+                className="text-green-500 hover:text-green-600 transition-colors font-bold text-lg"
+                aria-label="Scroll left"
+              >
+                ←
+              </button>
+            )}
+            
+            {!showLeftScroll && <div></div>} {/* Empty spacer when left arrow is hidden */}
+            
+            {showRightScroll && (
+              <button 
+                onClick={() => scrollTopics('right')}
+                className="text-green-500 hover:text-green-600 transition-colors font-bold text-lg"
+                aria-label="Scroll right"
+              >
+                →
+              </button>
+            )}
           </div>
         </div>
 
