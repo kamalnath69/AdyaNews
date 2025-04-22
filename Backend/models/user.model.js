@@ -50,6 +50,12 @@ const userSchema = new mongoose.Schema(
         interests: [String], // New field for interests
         hasSelectedInterests: { type: Boolean, default: false }, 
         role: { type: String, default: 'user' }, // New field for user role
+        // Add notifications field with defaults
+        notifications: {
+            email: { type: Boolean, default: true },
+            push: { type: Boolean, default: true },
+            newsletter: { type: Boolean, default: false }
+        }
     },
     { timestamps: true }
 );

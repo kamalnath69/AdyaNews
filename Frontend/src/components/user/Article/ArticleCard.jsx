@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { BookmarkIcon, BookmarkIcon as BookmarkFilledIcon } from 'lucide-react';
+import { BookmarkIcon, BookmarkIcon as BookmarkFilledIcon, InfoIcon } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { saveArticle, unsaveArticle } from '../../../redux/articleSlice';
 import { motion } from 'framer-motion';
 import SummaryModal from '../SummaryModal';
+import toast from 'react-hot-toast';
 
-// Add currentCategory as a prop
 const ArticleCard = ({ article, currentCategory = 'general' }) => {
   
   const [showSummary, setShowSummary] = useState(false);
@@ -32,14 +32,12 @@ const ArticleCard = ({ article, currentCategory = 'general' }) => {
           source: source || "Unknown Source",
           publishDate: publishDate || new Date().toISOString(),
           description: description || "",
-          // Make sure content exists
           content: article.content || description || "",
           image: image || "",
           category: currentCategory !== 'latest' && 
                    currentCategory !== 'trending' && 
                    currentCategory !== 'recommended' 
                    ? currentCategory : 'general',
-          // Add safe defaults
           author: article.author || "Unknown",
           tags: article.tags || [],
           readTime: article.readTime || "3 min read"
@@ -51,6 +49,55 @@ const ArticleCard = ({ article, currentCategory = 'general' }) => {
       setSavingStatus('idle');
     } catch (error) {
       console.error('Error saving/unsaving article:', error);
+      
+      // Show friendly notification when article is already saved
+      if (error.includes("Article already saved")) {
+        toast.custom(
+          (t) => (
+            <div 
+              className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+              } max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto flex`}
+            >
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 pt-0.5">
+                    <BookmarkFilledIcon className="h-5 w-5 text-primary-500" />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Already Saved
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      This article is already in your saved items
+                    </p>
+                    <Link 
+                      to="/saved"
+                      className="mt-2 inline-flex text-xs font-medium text-primary-600 hover:text-primary-500" 
+                      onClick={() => toast.dismiss(t.id)}
+                    >
+                      Go to saved articles →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className="flex border-l border-gray-200">
+                <button
+                  onClick={() => toast.dismiss(t.id)}
+                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-neutral-600 hover:text-neutral-500 focus:outline-none"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          ),
+          { duration: 4000, position: 'top-center' }
+        );
+      } else {
+        // Show generic error toast
+        toast.error("Failed to save article");
+      }
+      
       setSavingStatus('error');
       setTimeout(() => setSavingStatus('idle'), 2000);
     }

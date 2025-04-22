@@ -24,6 +24,7 @@ export const updateUserProfile = createAsyncThunk(
       const response = await apiClient.put('/user/profile', updatedData);
       return response.data.user; // Assuming the backend returns the updated user object
     } catch (error) {
+      console.error("Profile update error:", error.response?.data || error);
       return rejectWithValue(error.response?.data?.message || "Error updating profile");
     }
   }

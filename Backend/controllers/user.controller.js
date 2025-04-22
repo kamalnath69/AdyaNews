@@ -24,19 +24,24 @@ export const updateUserProfile = async (req, res) => {
             return res.status(401).json({ message: "User ID not found. Authentication required." });
         }
         
-        // Use name instead of fullName
-        const { name, email, language, interests, notifications, phoneNumber, address, profilePhoto } = req.body;
+        // Extract fields from the request body
+        const { fullName, name, email, language, interests, notifications, phoneNumber, address, profilePhoto } = req.body;
 
         // Create an update object with only the fields provided
         const updateFields = {};
+        if (fullName) updateFields.fullName = fullName;
         if (name) updateFields.name = name;
         if (email) updateFields.email = email;
         if (language) updateFields.language = language;
         if (interests) updateFields.interests = interests;
-        if (notifications) updateFields.notifications = notifications;
         if (phoneNumber) updateFields.phoneNumber = phoneNumber;
         if (address) updateFields.address = address;
         if (profilePhoto) updateFields.profilePhoto = profilePhoto;
+        
+        // Handle notifications as a complete object if provided
+        if (notifications) {
+            updateFields.notifications = notifications;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,

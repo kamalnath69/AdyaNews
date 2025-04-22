@@ -42,11 +42,13 @@ const Settings = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        fullName: user.fullName || '',
+        // Use fullName or fall back to name if fullName isn't available
+        fullName:  user.name || '',
         email: user.email || '',
         language: user.language || 'en',
         interests: user.interests || [],
         notifications: {
+          // Use the notifications from user if they exist, otherwise use defaults
           email: user.notifications?.email !== undefined ? user.notifications.email : true,
           push: user.notifications?.push !== undefined ? user.notifications.push : true,
           newsletter: user.notifications?.newsletter !== undefined ? user.notifications.newsletter : false
@@ -63,6 +65,7 @@ const Settings = () => {
     setMessage({ type: '', text: '' });
     
     try {
+      console.log("Saving settings with data:", formData);
       const languageChanged = formData.language !== prevLanguage;
       const interestsChanged = user && JSON.stringify(formData.interests) !== JSON.stringify(user.interests);
       
@@ -82,6 +85,7 @@ const Settings = () => {
       // Update the previous language
       setPrevLanguage(formData.language);
     } catch (error) {
+      console.error("Error saving settings:", error);
       setMessage({ 
         type: 'error', 
         text: error.message || 'Failed to save settings' 
