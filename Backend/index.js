@@ -24,15 +24,16 @@ const allowedOrigins = [
   "https://adyanews.onrender.com",
 ];
 
+// Update your CORS configuration
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:4173", 
+    "https://adyanews.onrender.com"
+  ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body

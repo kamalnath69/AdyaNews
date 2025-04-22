@@ -41,6 +41,14 @@ export const signup = async (req, res) => {
 		// jwt
 		generateTokenAndSetCookie(res, user._id);
 
+		const token = res.token; // Assuming token is set in generateTokenAndSetCookie
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production", // true in production
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // must be 'none' for cross-site
+			maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+		});
+
 		await sendVerificationEmail(user.email, verificationToken);
 
 		res.status(201).json({
@@ -103,6 +111,14 @@ export const login = async (req, res) => {
 		}
 
 		generateTokenAndSetCookie(res, user._id);
+
+		const token = res.token; // Assuming token is set in generateTokenAndSetCookie
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production", // true in production
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // must be 'none' for cross-site
+			maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+		});
 
 		user.lastLogin = new Date();
 		await user.save();
