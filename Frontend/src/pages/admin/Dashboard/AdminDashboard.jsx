@@ -54,24 +54,24 @@ const AdminDashboard = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {statsCards.map((stat, index) => (
               <div 
                 key={index} 
-                className="bg-white rounded-lg shadow-sm p-6 flex items-center"
+                className="bg-white rounded-lg shadow-sm p-4 sm:p-6 flex items-center"
               >
-                <div className={`p-3 rounded-full ${stat.color} mr-4`}>
+                <div className={`p-2 sm:p-3 rounded-full ${stat.color} mr-3 sm:mr-4`}>
                   {stat.icon}
                 </div>
                 <div>
-                  <p className="text-sm text-neutral-500">{stat.title}</p>
-                  <p className="text-2xl font-semibold text-neutral-800">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-neutral-500">{stat.title}</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-neutral-800">{stat.value}</p>
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Top Interests */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-semibold mb-4">Popular User Interests</h2>

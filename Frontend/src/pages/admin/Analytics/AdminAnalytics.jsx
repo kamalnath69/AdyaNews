@@ -54,9 +54,9 @@ const AdminAnalytics = () => {
       ) : (
         <>
           {/* User Registration Chart */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold mb-6">User Registrations (Last 30 Days)</h2>
-            <div className="h-72">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">User Registrations (Last 30 Days)</h2>
+            <div className="h-56 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={registrationData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -83,11 +83,11 @@ const AdminAnalytics = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* User Statistics */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-6">User Demographics</h2>
-              <div className="h-72">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">User Demographics</h2>
+              <div className="h-56 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -114,9 +114,9 @@ const AdminAnalytics = () => {
             </div>
             
             {/* Content Distribution */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-6">Content Distribution</h2>
-              <div className="h-72">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">Content Distribution</h2>
+              <div className="h-56 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -141,9 +141,9 @@ const AdminAnalytics = () => {
             </div>
             
             {/* Interest Distribution */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-6">Top User Interests</h2>
-              <div className="h-72">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">Top User Interests</h2>
+              <div className="h-56 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={userStats?.topInterests?.slice(0, 8).map(interest => ({
@@ -163,9 +163,9 @@ const AdminAnalytics = () => {
             </div>
             
             {/* Tag Distribution */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-6">Top Tags</h2>
-              <div className="h-72">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">Top Tags</h2>
+              <div className="h-56 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={contentStats?.topTags?.slice(0, 8).map(tag => ({

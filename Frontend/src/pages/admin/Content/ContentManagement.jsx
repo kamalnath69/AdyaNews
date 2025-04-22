@@ -100,14 +100,14 @@ const ContentManagement = () => {
       {/* Overview Tab */}
       {activeTab === 'overview' && status === 'succeeded' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Categories card */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Categories</h3>
+                <h3 className="text-base sm:text-lg font-semibold">Categories</h3>
                 <FolderIcon className="h-5 w-5 text-neutral-400" />
               </div>
-              <div className="h-64">
+              <div className="h-56 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -132,12 +132,12 @@ const ContentManagement = () => {
             </div>
             
             {/* Tags card */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Top Tags</h3>
+                <h3 className="text-base sm:text-lg font-semibold">Top Tags</h3>
                 <TagIcon className="h-5 w-5 text-neutral-400" />
               </div>
-              <div className="h-64">
+              <div className="h-56 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={tagData}>
                     <XAxis dataKey="name" tick={{ fontSize: 10 }} />

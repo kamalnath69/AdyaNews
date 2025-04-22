@@ -105,70 +105,72 @@ const UserManagement = () => {
       )}
       
       {status === 'succeeded' && filteredUsers.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg overflow-hidden">
-            <thead className="bg-neutral-50 text-neutral-700">
-              <tr>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Name</th>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Email</th>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Status</th>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Role</th>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Joined</th>
-                <th className="py-3 px-4 text-left font-semibold text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200">
-              {filteredUsers.map(user => (
-                <tr key={user._id} className="hover:bg-neutral-50">
-                  <td className="py-3 px-4 text-sm">
-                    <div className="font-medium text-neutral-800">{user.name}</div>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-neutral-600">{user.email}</td>
-                  <td className="py-3 px-4 text-sm">
-                    {user.isVerified ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                        <CheckCircleIcon className="h-3 w-3 mr-1" /> Verified
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                        <XCircleIcon className="h-3 w-3 mr-1" /> Unverified
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-sm">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      user.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {user.role || 'user'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-neutral-600">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="py-3 px-4 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => openRoleModal(user)}
-                        className="p-1.5 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
-                        title="Change role"
-                      >
-                        <EditIcon className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => openDeleteConfirmation(user)}
-                        className="p-1.5 text-neutral-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        title="Delete user"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="inline-block min-w-full align-middle">
+            <table className="min-w-full bg-white rounded-lg overflow-hidden">
+              <thead className="bg-neutral-50 text-neutral-700">
+                <tr>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm">Name</th>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm">Email</th>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm hidden sm:table-cell">Status</th>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm">Role</th>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Joined</th>
+                  <th className="py-3 px-4 text-left font-semibold text-xs sm:text-sm">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-neutral-200">
+                {filteredUsers.map(user => (
+                  <tr key={user._id} className="hover:bg-neutral-50">
+                    <td className="py-3 px-4 text-xs sm:text-sm">
+                      <div className="font-medium text-neutral-800">{user.name}</div>
+                    </td>
+                    <td className="py-3 px-4 text-xs sm:text-sm text-neutral-600 max-w-[120px] sm:max-w-none truncate">{user.email}</td>
+                    <td className="py-3 px-4 text-xs sm:text-sm hidden sm:table-cell">
+                      {user.isVerified ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          <CheckCircleIcon className="h-3 w-3 mr-1" /> Verified
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                          <XCircleIcon className="h-3 w-3 mr-1" /> Unverified
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-xs sm:text-sm">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        user.role === 'admin' 
+                          ? 'bg-purple-100 text-purple-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {user.role || 'user'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-xs sm:text-sm text-neutral-600 hidden md:table-cell">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4 text-xs sm:text-sm">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => openRoleModal(user)}
+                          className="p-1.5 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
+                          title="Change role"
+                        >
+                          <EditIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openDeleteConfirmation(user)}
+                          className="p-1.5 text-neutral-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          title="Delete user"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
       

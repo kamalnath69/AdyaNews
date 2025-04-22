@@ -40,11 +40,25 @@ export const sendWelcomeEmail = async (email, name) => {
 };
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
+    console.log("Reset url", resetURL);
+    
+    // Debug the template and replacement
+    let emailHtml = PASSWORD_RESET_REQUEST_TEMPLATE;
+    
+    // Replace the link URL directly with explicit string targeting
+    emailHtml = emailHtml.split('href="{resetURL}"').join(`href="${resetURL}"`);
+    
+    // Add fallback text link in case the button doesn't work
+    emailHtml = emailHtml.replace(
+        'This link will expire in 1 hour for security reasons.',
+        `If the button doesn't work, copy and paste this link into your browser: <br><a href="${resetURL}">${resetURL}</a><br><br>This link will expire in 1 hour for security reasons.`
+    );
+    
     const mailOptions = {
         from: `"AdyaNews" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Reset Your Password",
-        html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+        html: emailHtml,
     };
 
     try {

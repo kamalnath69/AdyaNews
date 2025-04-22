@@ -32,9 +32,9 @@ const ResetPasswordPage = () => {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden">
+        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden px-4 sm:px-0">
             <div
-                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-8 py-8 flex flex-col justify-center mx-auto my-12"
+                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-4 sm:px-6 md:px-8 py-6 sm:py-8 flex flex-col justify-center mx-auto my-8 sm:my-12"
                 style={{
                     background: "rgba(255,255,255,0.55)",
                     backdropFilter: "blur(18px) saturate(1.5)",
@@ -47,15 +47,15 @@ const ResetPasswordPage = () => {
                         initial={{ scale: 0.7, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.1 }}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-1 sm:gap-2"
                     >
-                        <NewspaperIcon className="h-10 w-10 text-primary-500 drop-shadow-lg" />
-                        <span className="text-3xl font-extrabold text-primary-500 tracking-tight drop-shadow-lg">AdyaNews</span>
+                        <NewspaperIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary-500 drop-shadow-lg" />
+                        <span className="text-2xl sm:text-3xl font-extrabold text-primary-500 tracking-tight drop-shadow-lg">AdyaNews</span>
                     </motion.div>
-                    <h2 className="mt-3 text-xl font-bold text-neutral-900 text-center">
+                    <h2 className="mt-2 sm:mt-3 text-lg sm:text-xl font-bold text-neutral-900 text-center">
                         Reset Password
                     </h2>
-                    <p className="text-neutral-500 text-center text-sm mt-1">
+                    <p className="text-neutral-500 text-center text-xs sm:text-sm mt-1">
                         Enter your new password below
                     </p>
                 </div>
@@ -80,9 +80,9 @@ const ResetPasswordPage = () => {
                         error={password !== confirmPassword && confirmPassword ? "Passwords do not match" : ""}
                     />
                     <motion.button
-                        whileHover={{ scale: 1.03 }}
+                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full py-3 px-4 bg-primary-500 text-white font-bold rounded-lg shadow-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition duration-200"
+                        className="w-full py-2.5 sm:py-3 px-4 bg-primary-500 text-white text-sm sm:text-base font-medium rounded-lg shadow hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all"
                         type="submit"
                         disabled={isLoading}
                     >
@@ -108,11 +108,11 @@ const InputField = ({ id, label, type = "text", value, onChange, icon, error }) 
                 required
                 value={value}
                 onChange={onChange}
-                className="appearance-none block w-full px-3 py-2 pl-10 border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="appearance-none block w-full px-3 py-2 pl-10 border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base"
             />
             <div className="absolute left-3 top-2.5 text-neutral-400">{icon}</div>
         </div>
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs sm:text-sm text-red-500">{error}</p>}
     </div>
 );
 

@@ -87,11 +87,7 @@ function AppContent() {
               <ForgotPasswordPage />
             </RedirectAuthenticatedUser>
           } />
-          <Route path="/reset-password/:token" element={
-            <RedirectAuthenticatedUser>
-              <ResetPasswordPage />
-            </RedirectAuthenticatedUser>
-          } />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           {/* Onboarding routes */}
           <Route path="/select-language" element={<LanguageSelection />} />
           <Route path="/select-interests" element={<InterestSelection />} />

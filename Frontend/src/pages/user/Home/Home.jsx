@@ -250,8 +250,8 @@ const Home = () => {
             </div>
           </div>
           
-          {/* Simple arrow indicators below the topics */}
-          <div className="flex justify-between md:hidden mt-1 px-1">
+          {/* Simple arrow indicators below the topics - NO MARGIN TOP */}
+          <div className="flex justify-between md:hidden px-1">
             {showLeftScroll && (
               <button 
                 onClick={() => scrollTopics('left')}

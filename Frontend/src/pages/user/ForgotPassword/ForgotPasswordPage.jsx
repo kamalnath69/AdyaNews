@@ -23,9 +23,9 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden">
+        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden px-4 sm:px-0">
             <div
-                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-8 py-8 flex flex-col justify-center mx-auto my-12"
+                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-4 sm:px-6 md:px-8 py-6 sm:py-8 flex flex-col justify-center mx-auto my-8 sm:my-12"
                 style={{
                     background: "rgba(255,255,255,0.55)",
                     backdropFilter: "blur(18px) saturate(1.5)",
@@ -64,13 +64,13 @@ const ForgotPasswordPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         <motion.button
-                            whileHover={{ scale: 1.03 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full py-3 px-4 bg-primary-500 text-white font-bold rounded-lg shadow-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition duration-200"
+                            className="w-full py-2.5 sm:py-3 px-4 bg-primary-500 text-white text-sm sm:text-base font-medium rounded-lg shadow hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all"
                             type="submit"
                             disabled={isLoading}
                         >
-                            {isLoading ? <Loader className="size-6 animate-spin mx-auto" /> : "Send Reset Link"}
+                            {isLoading ? <Loader className="size-5 sm:size-6 animate-spin mx-auto" /> : "Send Reset Link"}
                         </motion.button>
                     </form>
                 ) : (
@@ -100,11 +100,14 @@ const ForgotPasswordPage = () => {
 
 // Reusable InputField (copied from LoginPage)
 const InputField = ({ id, label, type = "text", value, onChange, icon, error }) => (
-    <div>
-        <label htmlFor={id} className="block text-sm font-medium text-neutral-700 mb-1">
+    <div className="mb-3 sm:mb-4">
+        <label htmlFor={id} className="block text-xs sm:text-sm font-medium text-neutral-700 mb-1">
             {label}
         </label>
-        <div className="mt-1 relative">
+        <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+                {icon}
+            </div>
             <input
                 id={id}
                 name={id}
@@ -112,11 +115,10 @@ const InputField = ({ id, label, type = "text", value, onChange, icon, error }) 
                 required
                 value={value}
                 onChange={onChange}
-                className="appearance-none block w-full px-3 py-2 pl-10 border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="appearance-none block w-full px-3 py-2 pl-10 text-xs sm:text-sm border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             />
-            <div className="absolute left-3 top-2.5 text-neutral-400">{icon}</div>
         </div>
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
 );
 

@@ -59,9 +59,9 @@ const EmailVerificationPage = () => {
     }, [code]);
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden">
+        <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden px-4 sm:px-0">
             <div
-                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-8 py-8 flex flex-col justify-center mx-auto my-12"
+                className="relative z-10 w-full max-w-md rounded-3xl shadow-2xl border border-primary-100 px-4 sm:px-6 md:px-8 py-6 sm:py-8 flex flex-col justify-center mx-auto my-8 sm:my-12"
                 style={{
                     background: "rgba(255,255,255,0.55)",
                     backdropFilter: "blur(18px) saturate(1.5)",
@@ -87,27 +87,33 @@ const EmailVerificationPage = () => {
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6 w-full">
-                    <div className="flex justify-between">
+                    <div className="flex justify-center space-x-1 sm:space-x-2 md:space-x-3">
                         {code.map((digit, index) => (
                             <input
                                 key={index}
                                 ref={(el) => (inputRefs.current[index] = el)}
                                 type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                                 maxLength="1"
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                className="w-12 h-12 text-center text-2xl font-bold bg-white/80 text-primary-700 border-2 border-primary-200 rounded-lg focus:border-primary-500 focus:outline-none transition"
+                                className="w-8 h-10 sm:w-10 sm:h-12 md:w-12 md:h-14 text-center text-sm sm:text-lg md:text-xl font-bold bg-white/80 text-primary-700 border-2 border-primary-200 rounded-lg focus:border-primary-500 focus:outline-none transition"
                             />
                         ))}
                     </div>
                     {error && <p className="text-red-500 font-semibold mt-2 text-center">{error}</p>}
                     <motion.button
-                        whileHover={{ scale: 1.03 }}
+                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        disabled={code.join("").length !== 6 || isLoading}
+                        className={`mt-6 w-full py-2.5 sm:py-3 md:py-4 rounded-xl text-sm sm:text-base font-medium transition-colors ${
+                            code.join("").length === 6 && !isLoading
+                                ? "bg-primary-500 text-white hover:bg-primary-600"
+                                : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                        }`}
                         type="submit"
-                        disabled={isLoading || code.some((digit) => !digit)}
-                        className="w-full bg-primary-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 disabled:opacity-50 transition"
                     >
                         {isLoading ? "Verifying..." : "Verify Email"}
                     </motion.button>
