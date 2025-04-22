@@ -221,12 +221,12 @@ const Home = () => {
         </div>
 
         {/* Topic Tabs with simple scroll indicators */}
-        <div className="container mx-auto px-4 mb-6 relative">
+        <div className="container mx-auto px-4 mb-2 relative">
           {/* This wrapper handles centering on larger screens while allowing scroll on mobile */}
           <div className="flex justify-start md:justify-center">
             <div 
               ref={topicsScrollRef}
-              className="overflow-x-auto scrollbar-hide py-2 max-w-full mb-1"
+              className="overflow-x-auto scrollbar-hide py-0 max-w-full" // Removed py-2 and mb-1
               onScroll={checkScrollPosition}
             >
               {/* On small screens: full width scrollable | On md+: flex centered */}
@@ -251,7 +251,7 @@ const Home = () => {
           </div>
           
           {/* Simple arrow indicators below the topics - NO MARGIN TOP */}
-          <div className="flex justify-between md:hidden px-1">
+          <div className="flex justify-between md:hidden px-1 -mt-2"> {/* Added -mt-2 for negative margin */}
             {showLeftScroll && (
               <button 
                 onClick={() => scrollTopics('left')}
