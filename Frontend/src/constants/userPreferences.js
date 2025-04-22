@@ -5,7 +5,6 @@ export const LANGUAGES = [
   { id: 'en', label: 'English' },
   { id: 'es', label: 'Spanish' },
   { id: 'fr', label: 'French' },
-  { id: 'de', label: 'German' },
   { id: 'it', label: 'Italian' },
   { id: 'pt', label: 'Portuguese' },
   { id: 'ru', label: 'Russian' },
@@ -14,6 +13,7 @@ export const LANGUAGES = [
   { id: 'ko', label: 'Korean' },
   { id: 'ar', label: 'Arabic' },
   { id: 'hi', label: 'Hindi' },
+  { id: 'ta', label: 'Tamil' },
 ];
 
 // Standard interest options throughout the app

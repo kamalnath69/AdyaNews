@@ -62,7 +62,6 @@ app.get("/api/news/", verifyToken, async (req, res) => {
       'en': 'eng',
       'es': 'spa',
       'fr': 'fra',
-      'de': 'ger',
       'it': 'ita',
       'pt': 'por',
       'ru': 'rus',
@@ -71,6 +70,7 @@ app.get("/api/news/", verifyToken, async (req, res) => {
       'ja': 'jpn',
       'ko': 'kor',
       'hi': 'hin',
+      'ta': 'tam',
       // Add more mappings as needed
     };
     
@@ -111,7 +111,6 @@ app.get("/api/news/", verifyToken, async (req, res) => {
 app.get("/api/public/news/", async (req, res) => {
   try {
     // Hardcode language to English
-    const userLanguage = 'en';
     const erLanguage = 'eng'; // EventRegistry format for English
     
     const query = {

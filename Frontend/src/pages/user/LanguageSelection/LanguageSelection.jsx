@@ -9,11 +9,15 @@ const languages = [
   { id: 'en', label: 'English' },
   { id: 'es', label: 'Spanish' },
   { id: 'fr', label: 'French' },
-  { id: 'de', label: 'German' },
-  { id: 'hi', label: 'Hindi' },
-  { id: 'zh', label: 'Chinese' },
-  { id: 'ar', label: 'Arabic' },
+  { id: 'it', label: 'Italian' },
+  { id: 'pt', label: 'Portuguese' },
   { id: 'ru', label: 'Russian' },
+  { id: 'zh', label: 'Chinese' },
+  { id: 'ja', label: 'Japanese' },
+  { id: 'ko', label: 'Korean' },
+  { id: 'ar', label: 'Arabic' },
+  { id: 'hi', label: 'Hindi' },
+  { id: 'ta', label: 'Tamil' },
 ];
 
 const LanguageSelection = () => {
