@@ -138,8 +138,15 @@ export const login = async (req, res) => {
 };
 
 export const logoutUser = (req, res) => {
-  res.clearCookie("token"); // or whatever your cookie name is
-  res.status(200).json({ message: "Logged out successfully" });
+  // Clear with the same settings as when setting the cookie
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    expires: new Date(0)  // Set to epoch time (expired)
+  });
+  
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
 export const forgotPassword = async (req, res) => {

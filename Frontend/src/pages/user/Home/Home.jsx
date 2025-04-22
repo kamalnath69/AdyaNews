@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchArticles, setSearchTerm, incrementPage, fetchSavedArticles } from '../../../redux/articleSlice';
-import { AlertCircleIcon, RefreshCwIcon, NewspaperIcon } from 'lucide-react';
+import { AlertCircleIcon, RefreshCwIcon, NewspaperIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import SearchBar from '../../../components/user/Home/SearchBar';
 import ArticleGrid from '../../../components/user/Article/ArticleGrid';
 import FloatingActionButton from '../../../components/user/Home/FloatingActionButton';
@@ -20,6 +20,9 @@ const Home = () => {
   const [selectedTopic, setSelectedTopic] = useState('latest');
   const [fetchRetries, setFetchRetries] = useState(0);
   const observer = useRef();
+  const topicsScrollRef = useRef(null);
+  const [showLeftScroll, setShowLeftScroll] = useState(false);
+  const [showRightScroll, setShowRightScroll] = useState(false);
   
   // Get interests from either auth user or profile user
   const userInterests = profileUser?.interests || authUser?.interests || [];
@@ -173,6 +176,38 @@ const Home = () => {
     </div>
   );
 
+  // Add this function to check scroll position
+  const checkScrollPosition = () => {
+    const scrollContainer = topicsScrollRef.current;
+    if (scrollContainer) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+      setShowLeftScroll(scrollLeft > 0);
+      setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 10); // 10px buffer
+    }
+  };
+
+  // Add this effect to initialize and update scroll indicators
+  useEffect(() => {
+    checkScrollPosition();
+    window.addEventListener('resize', checkScrollPosition);
+    return () => window.removeEventListener('resize', checkScrollPosition);
+  }, [topics]);
+
+  // Scroll handler functions
+  const scrollTopics = (direction) => {
+    const scrollContainer = topicsScrollRef.current;
+    if (scrollContainer) {
+      const scrollAmount = scrollContainer.clientWidth * 0.5; // Scroll 50% of container width
+      scrollContainer.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+      
+      // Update scroll indicators after animation
+      setTimeout(checkScrollPosition, 400);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <Navbar />
@@ -186,11 +221,37 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Topic Tabs with responsive centering */}
-        <div className="container mx-auto px-4 mb-6">
+        {/* Topic Tabs with scroll indicators */}
+        <div className="container mx-auto px-4 mb-6 relative">
+          {/* Left scroll indicator */}
+          {showLeftScroll && (
+            <button 
+              onClick={() => scrollTopics('left')}
+              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-1 rounded-full shadow-md text-neutral-600 hover:bg-white transition-colors md:hidden"
+              aria-label="Scroll left"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </button>
+          )}
+          
+          {/* Right scroll indicator */}
+          {showRightScroll && (
+            <button 
+              onClick={() => scrollTopics('right')}
+              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-1 rounded-full shadow-md text-neutral-600 hover:bg-white transition-colors md:hidden"
+              aria-label="Scroll right"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </button>
+          )}
+
           {/* This wrapper handles centering on larger screens while allowing scroll on mobile */}
           <div className="flex justify-start md:justify-center">
-            <div className="overflow-x-auto scrollbar-hide py-2 max-w-full">
+            <div 
+              ref={topicsScrollRef}
+              className="overflow-x-auto scrollbar-hide py-2 max-w-full"
+              onScroll={checkScrollPosition}
+            >
               {/* On small screens: full width scrollable | On md+: flex centered */}
               <div className="flex flex-nowrap md:flex-wrap md:justify-center">
                 {topics.map((topic) => (

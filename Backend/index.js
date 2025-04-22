@@ -195,14 +195,17 @@ async function fetchArticles(searchQuery, page = 1, pageSize = 9, language = "en
   }
 }
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+// Replace with a simple API status endpoint:
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "online",
+    message: "AdyaNews API is running",
+    version: "1.0.0",
+    documentation: "Visit /api-docs for API documentation"
   });
-}
+});
 
+// Keep your existing app.listen code
 app.listen(PORT, () => {
   connectDB();
   console.log("Server is running on port: ", PORT);

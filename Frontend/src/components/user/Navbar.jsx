@@ -33,8 +33,20 @@ const Navbar = () => {
   }, [scrolled]);
 
   const handleLogout = async () => {
-    await dispatch(logout());
-    navigate('/login');
+    try {
+      // Wait for logout action to complete
+      await dispatch(logout()).unwrap();
+      // Force clear any remaining auth data
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      // Only navigate after successful logout
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still attempt to navigate on error
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
   };
 
   return (
