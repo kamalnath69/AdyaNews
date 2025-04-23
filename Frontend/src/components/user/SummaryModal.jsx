@@ -2,27 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon, CopyIcon, CheckIcon, SparklesIcon, TrendingUpIcon, TrendingDownIcon, MinusIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../../utils/apiClient'; // Use apiClient instead of axios
 
 const SummaryModal = ({ article, onClose }) => {
   const [summary, setSummary] = useState(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setSummary(null);
+    setError(false);
 
-    // Use correct API URL for dev/prod, like in authSlice.js
-    const API_URL =
-      import.meta.env.MODE === "development"
-        ? "http://localhost:5000/api/article"
-        : "https://adyanewsbackend.onrender.com/api/article";
-
-    axios
-      .post(`${API_URL}/summarize`, { text: article.content })
+    // Use apiClient instead of direct axios
+    apiClient.post('/article/summarize', { text: article.content })
       .then(res => {
-        
         setSummary({
           keyPoints: res.data.key_points || [],
           sentiment: res.data.sentiment || '',
@@ -30,10 +25,23 @@ const SummaryModal = ({ article, onClose }) => {
         });
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(err => {
+        console.error("Summary API error:", err);
+        setError(true);
+        setLoading(false);
+        // Initialize with empty data to prevent null reference errors
+        setSummary({
+          keyPoints: [],
+          sentiment: '',
+          mainTakeaway: 'Unable to generate summary.',
+        });
+      });
   }, [article.id]);
 
   const handleCopy = () => {
+    // Skip if summary is null
+    if (!summary) return;
+    
     const textToCopy = `
 ${article.title}
 
@@ -120,10 +128,20 @@ ${summary.mainTakeaway}
                 ))}
               </div>
             </div>
+          ) : error ? (
+            <div className="text-center py-4">
+              <p className="text-red-500">Failed to generate summary</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-sm"
+              >
+                Try Again
+              </button>
+            </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
-              {/* Add sentiment display */}
-              {summary.sentiment && (
+              {/* Add sentiment display with null check */}
+              {summary && summary.sentiment && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -147,7 +165,7 @@ ${summary.mainTakeaway}
               <div>
                 <h3 className="font-medium text-sm sm:text-base text-neutral-800 mb-2 sm:mb-3">Key Points:</h3>
                 <ul className="space-y-1.5 sm:space-y-2">
-                  {summary.keyPoints.map((point, index) => (
+                  {summary && summary.keyPoints && summary.keyPoints.map((point, index) => (
                     <motion.li
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
@@ -159,13 +177,16 @@ ${summary.mainTakeaway}
                       <span className="text-neutral-600">{point}</span>
                     </motion.li>
                   ))}
+                  {summary && summary.keyPoints && summary.keyPoints.length === 0 && (
+                    <li className="text-neutral-500 text-sm">No key points available</li>
+                  )}
                 </ul>
               </div>
 
               <div>
                 <h3 className="font-medium text-sm sm:text-base text-neutral-800 mb-2">Main Takeaway:</h3>
                 <p className="text-xs sm:text-sm text-neutral-600 bg-primary-50 p-3 sm:p-4 rounded-lg">
-                  {summary.mainTakeaway}
+                  {summary && summary.mainTakeaway ? summary.mainTakeaway : 'No main takeaway available'}
                 </p>
               </div>
             </div>
@@ -175,7 +196,7 @@ ${summary.mainTakeaway}
         <div className="px-4 sm:px-6 py-3 sm:py-4 bg-neutral-50 border-t flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
           <button
             onClick={handleCopy}
-            disabled={loading}
+            disabled={loading || error || !summary}
             className="w-full sm:w-auto flex items-center justify-center px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-colors disabled:opacity-50"
           >
             {copied ? (
