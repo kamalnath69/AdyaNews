@@ -29,12 +29,11 @@ const allowedOrigins = [
 // Create proper CORS options - FIXED version
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin) return callback(null, true); // Allow curl or postman
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
@@ -43,24 +42,7 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// Apply CORS globally
-app.use(cors(corsOptions));
-
-// Simple OPTIONS pre-flight handler
-app.options('*', (req, res) => {
-  // Read the origin from the request
-  const origin = req.headers.origin;
-  
-  // Only set Access-Control-Allow-Origin for allowed origins
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.status(204).end();
-});
+app.use(cors(corsOptions)); 
 
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
