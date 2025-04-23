@@ -4,10 +4,10 @@ const API_URL = import.meta.env.MODE === "development"
   ? "http://localhost:5000/api" 
   : "https://adyanewsbackend.onrender.com/api";
 
-// Create axios instance with base configuration
+// Create axios instance with consistent configuration
 const apiClient = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
+  withCredentials: false, // Explicitly disable credentials
   headers: {
     'Content-Type': 'application/json',
   }
@@ -23,20 +23,6 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
-);
-
-// Handle auth errors globally
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      if (window.location.hash !== '#/login') {
-        window.location.href = '/#/login';
-      }
-    }
-    return Promise.reject(error);
-  }
 );
 
 export default apiClient;

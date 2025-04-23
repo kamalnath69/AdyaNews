@@ -160,18 +160,21 @@ const SignUpPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      await dispatch(
-        signup({
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-        })
-      ).unwrap();
-      localStorage.setItem('pendingVerificationEmail', formData.email);
-      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}&context=signup`);
+        await dispatch(
+            signup({
+                email: formData.email,
+                password: formData.password,
+                name: formData.name,
+            })
+        ).unwrap();
+        
+        localStorage.setItem('pendingVerificationEmail', formData.email);
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}&context=signup`);
+        
+        toast.success("Account created! Please verify your email to continue.");
     } catch (error) {
-      console.error("Signup error:", error);
-      setErrors({ general: error.message });
+        console.error("Signup error:", error);
+        setErrors({ general: error.message });
     }
   };
 

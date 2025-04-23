@@ -1,9 +1,16 @@
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {
-    // Check both cookies and Authorization header
-    const token = req.cookies.token || 
-                 (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    // Check Authorization header first, then fall back to cookies if present
+    const authHeader = req.headers.authorization;
+    let token;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+        // For backward compatibility
+        token = req.cookies.token;
+    }
     
     if (!token) return res.status(401).json({ success: false, message: "Unauthorized - no token provided" });
     

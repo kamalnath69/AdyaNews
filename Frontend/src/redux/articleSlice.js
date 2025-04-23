@@ -1,28 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import apiClient from '../utils/apiClient';
 
 // Add this helper function at the top of your file
 const DEFAULT_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij5ObyBJbWFnZSBBdmFpbGFibGU8L3RleHQ+PC9zdmc+';
 
 const API_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "https://adyanewsbackend.onrender.com/api";
 
-// Update the fetchArticles thunk
+// Update the fetchArticles thunk to use apiClient
 export const fetchArticles = createAsyncThunk(
   'articles/fetchArticles',
   async ({ query = '', topic = '', page = 1 } = {}, { rejectWithValue, signal }) => {
     try {
-      // Create a controller for timeout management
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
       
-      const response = await axios.get(`${API_URL}/news`, {
+      const response = await apiClient.get('/news', {
         params: {
           q: query,
           topic,
           page,
           pageSize: 9, // Explicit page size to match grid layout (3x3)
         },
-        withCredentials: true,
         signal: controller.signal,
       });
       
@@ -64,9 +62,7 @@ export const fetchSavedArticles = createAsyncThunk(
   'articles/fetchSavedArticles',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/article/saved`, {
-        withCredentials: true,
-      });
+      const response = await apiClient.get('/article/saved');
       return response.data;
     } catch (error) {
       console.error('API Error:', error.response?.data || error.message);
@@ -90,9 +86,7 @@ export const saveArticle = createAsyncThunk(
         category: article.category || 'general'
       };
       
-      const response = await axios.post(`${API_URL}/article/save`, articleToSave, {
-        withCredentials: true,
-      });
+      const response = await apiClient.post('/article/save', articleToSave);
       
       console.log('Save article response:', response.data);
       return { article: articleToSave, savedArticle: response.data };
@@ -110,9 +104,7 @@ export const unsaveArticle = createAsyncThunk(
     try {
       console.log('Attempting to unsave article with ID:', articleId);
       
-      const response = await axios.delete(`${API_URL}/article/unsave/${articleId}`, {
-        withCredentials: true,
-      });
+      const response = await apiClient.delete(`/article/unsave/${articleId}`);
       
       console.log('Unsave article response:', response.data);
       return articleId;
@@ -130,9 +122,7 @@ export const toggleReadStatus = createAsyncThunk(
     try {
       console.log(`Attempting to toggle read status for article ${articleId}`);
       
-      const response = await axios.put(`${API_URL}/article/read/${articleId}`, {}, {
-        withCredentials: true,
-      });
+      const response = await apiClient.put(`/article/read/${articleId}`);
       
       console.log(`Success! Article ${articleId} toggled to read status: ${response.data.isRead}`);
       
@@ -149,9 +139,8 @@ export const updateArticleCategory = createAsyncThunk(
   'articles/updateCategory',
   async ({ articleId, category }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${API_URL}/article/category/${articleId}`, 
-        { category }, 
-        { withCredentials: true }
+      const response = await apiClient.put(`/article/category/${articleId}`, 
+        { category }
       );
       return response.data;
     } catch (error) {
@@ -166,9 +155,8 @@ export const updateArticleTags = createAsyncThunk(
   'articles/updateTags',
   async ({ articleId, tags }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${API_URL}/article/tags/${articleId}`, 
-        { tags }, 
-        { withCredentials: true }
+      const response = await apiClient.put(`/article/tags/${articleId}`, 
+        { tags }
       );
       return response.data;
     } catch (error) {
@@ -183,9 +171,7 @@ export const fetchArticleMetadata = createAsyncThunk(
   'articles/fetchMetadata',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/article/metadata`, {
-        withCredentials: true,
-      });
+      const response = await apiClient.get('/article/metadata');
       return response.data;
     } catch (error) {
       console.error('API Error:', error.response?.data || error.message);

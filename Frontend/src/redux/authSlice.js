@@ -65,7 +65,9 @@ export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, { rejectWi
 export const verifyEmail = createAsyncThunk("auth/verifyEmail", async (code, { rejectWithValue }) => {
     try {
         const response = await apiClient.post('/auth/verify-email', { code });
-        return response.data.user;
+        
+        // Don't handle authentication here, let the component handle redirection
+        return response.data;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || "Error verifying email");
     }
@@ -189,9 +191,12 @@ const authSlice = createSlice({
                 state.error = null;
             })
             .addCase(verifyEmail.fulfilled, (state, action) => {
-                state.user = action.payload;
-                state.isAuthenticated = true;
+                state.message = action.payload.message;
                 state.isLoading = false;
+                
+                // Don't set authenticated or user here
+                // state.user = action.payload.user;
+                // state.isAuthenticated = true;
             })
             .addCase(verifyEmail.rejected, (state, action) => {
                 state.error = action.payload;

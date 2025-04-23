@@ -50,9 +50,15 @@ const EmailVerificationPage = () => {
         e.preventDefault();
         const verificationCode = code.join("");
         try {
-            await dispatch(verifyEmail(verificationCode)).unwrap();
-            navigate(getSuccessRedirect());
-            toast.success("Email verified successfully");
+            const result = await dispatch(verifyEmail(verificationCode)).unwrap();
+            
+            // Always redirect to login after successful verification
+            localStorage.removeItem('pendingVerificationEmail');
+            toast.success("Email verified successfully! Please log in to continue.");
+            
+            setTimeout(() => {
+                navigate("/login");
+            }, 1500);
         } catch (error) {
             toast.error(error.message || "Error verifying email");
         }
@@ -119,17 +125,6 @@ const EmailVerificationPage = () => {
                 return "Verify your email before logging in";
             default:
                 return "Verify your email address to activate your account";
-        }
-    };
-
-    const getSuccessRedirect = () => {
-        switch (verificationContext) {
-            case "resetPassword":
-                return "/forgot-password";
-            case "login":
-                return "/login";
-            default:
-                return "/";
         }
     };
 

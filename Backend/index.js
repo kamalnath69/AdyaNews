@@ -18,31 +18,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
-// Define allowed origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:4173",
-  "https://adyanews.onrender.com",
-  "https://adyanewsbackend.onrender.com"
-];
-
-// Create proper CORS options - FIXED version
+// Update your CORS configuration to properly handle OPTIONS requests
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow curl or postman
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  origin: '*', // Since we're not using credentials, wildcard is fine
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], 
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
+  credentials: false // Explicitly disable credentials
 };
 
-app.use(cors(corsOptions)); 
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
@@ -52,6 +37,14 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/article", articleRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Add explicit OPTIONS handler for the news endpoint
+app.options('/api/news', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
+  res.sendStatus(204);
+});
 
 // 🔐 Replace this with your Event Registry API key
 const er = new EventRegistry({ apiKey: process.env.NEWS_API_KEY });
