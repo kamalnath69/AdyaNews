@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'; // Added useLocation import
 import store from './redux/store';
 import { checkAuth } from './redux/authSlice';
 import { fetchSavedArticles, fetchArticleMetadata } from './redux/articleSlice';
@@ -54,10 +54,14 @@ function AppContent() {
   const dispatch = useDispatch();
   const { isCheckingAuth } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.user);
+  const location = useLocation(); // Added useLocation
 
   useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+    // Skip auth check for reset password routes
+    if (!location.pathname.includes('/reset-password/')) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch, location.pathname]);
 
   useEffect(() => {
     if (user) {
@@ -66,13 +70,20 @@ function AppContent() {
     }
   }, [dispatch, user]);
 
-  if (isCheckingAuth) return <LoadingSpinner />;
+  // Don't show loading spinner for reset password routes
+  if (isCheckingAuth && !location.pathname.includes('/reset-password/')) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
       
       <main className="flex-grow relative z-10 min-h-screen flex flex-col bg-neutral-50">
         <Routes>
+          {/* Public routes that should NEVER redirect to login */}
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          
+          {/* Normal public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={
             <RedirectAuthenticatedUser>
@@ -85,7 +96,6 @@ function AppContent() {
               <ForgotPasswordPage />
             </RedirectAuthenticatedUser>
           } />
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           {/* Onboarding routes */}
           <Route path="/select-language" element={<LanguageSelection />} />
           <Route path="/select-interests" element={<InterestSelection />} />

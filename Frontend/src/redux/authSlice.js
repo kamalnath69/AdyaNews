@@ -24,6 +24,20 @@ export const login = createAsyncThunk("auth/login", async ({ email, password }, 
         
         return response.data.user;
     } catch (error) {
+        // Check if the error is for an unverified user
+        if (error.response?.status === 403 && error.response.data?.needsVerification) {
+            // Store email for verification page
+            localStorage.setItem('pendingVerificationEmail', error.response.data.email);
+            
+            // Return special error with needsVerification flag but keep it string-compatible
+            return rejectWithValue({
+                message: error.response.data.message || "Please verify your email before logging in",
+                needsVerification: true,
+                email: error.response.data.email,
+                toString: function() { return this.message; } // Make it behave like a string
+            });
+        }
+        
         return rejectWithValue(error.response?.data?.message || "Error logging in");
     }
 });
@@ -62,6 +76,18 @@ export const forgotPassword = createAsyncThunk("auth/forgotPassword", async (ema
         const response = await apiClient.post('/auth/forgot-password', { email });
         return response.data.message;
     } catch (error) {
+        // Check if this is an unverified user
+        if (error.response?.status === 403 && error.response.data?.needsVerification) {
+            // Store email for verification page
+            localStorage.setItem('pendingVerificationEmail', error.response.data.email);
+            
+            // Return special error with needsVerification flag
+            return rejectWithValue({
+                message: error.response.data.message,
+                needsVerification: true,
+                email: error.response.data.email
+            });
+        }
         return rejectWithValue(error.response?.data?.message || "Error sending reset password email");
     }
 });
@@ -74,6 +100,18 @@ export const resetPassword = createAsyncThunk("auth/resetPassword", async ({ tok
         return rejectWithValue(error.response?.data?.message || "Error resetting password");
     }
 });
+
+export const resendVerification = createAsyncThunk(
+  "auth/resendVerification",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post('/auth/resend-verification', { email });
+      return response.data.message;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error sending verification email");
+    }
+  }
+);
 
 // Slice
 const authSlice = createSlice({
@@ -184,6 +222,19 @@ const authSlice = createSlice({
             .addCase(resetPassword.rejected, (state, action) => {
                 state.error = action.payload;
                 state.isLoading = false;
+            })
+            // Resend Verification
+            .addCase(resendVerification.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(resendVerification.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.message = action.payload;
+            })
+            .addCase(resendVerification.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
             });  
     },
 });

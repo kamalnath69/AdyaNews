@@ -156,7 +156,7 @@ const SignUpPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
@@ -167,9 +167,11 @@ const SignUpPage = () => {
           name: formData.name,
         })
       ).unwrap();
-      navigate("/verify-email");
+      localStorage.setItem('pendingVerificationEmail', formData.email);
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}&context=signup`);
     } catch (error) {
-      // error handled by redux
+      console.error("Signup error:", error);
+      setErrors({ general: error.message });
     }
   };
 
@@ -301,7 +303,7 @@ const SignUpPage = () => {
             Stay updated with the latest news as you join!
           </p>
         </div>
-        <form className="space-y-3 w-full" onSubmit={handleSignUp} autoComplete="off">
+        <form className="space-y-3 w-full" onSubmit={handleSubmit} autoComplete="off">
           <InputField
             id="name"
             label="Full Name"

@@ -2,12 +2,14 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, Loader, MailIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../../redux/authSlice";
+import toast from "react-hot-toast";
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
     const { isLoading, error } = useSelector((state) => state.auth);
@@ -15,10 +17,18 @@ const ForgotPasswordPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await dispatch(forgotPassword(email)).unwrap();
+            const result = await dispatch(forgotPassword(email)).unwrap();
             setIsSubmitted(true);
         } catch (error) {
-            console.error(error);
+            // Check if the error is for an unverified user
+            if (error && typeof error === 'object' && error.needsVerification) {
+                toast.error("Please verify your email before resetting your password");
+                
+                // Add this redirect with context parameter
+                setTimeout(() => {
+                    navigate(`/verify-email?email=${encodeURIComponent(error.email)}&context=resetPassword`);
+                }, 1500);
+            }
         }
     };
 

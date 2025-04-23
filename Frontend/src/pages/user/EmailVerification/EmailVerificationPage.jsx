@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { verifyEmail } from "../../../redux/authSlice";
+import { verifyEmail, resendVerification } from "../../../redux/authSlice";
 import { NewspaperIcon } from "lucide-react";
 
 const EmailVerificationPage = () => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const { error, isLoading } = useSelector((state) => state.auth);
+
+    const [email, setEmail] = useState("");
+    const [resendingCode, setResendingCode] = useState(false);
+    const [canResend, setCanResend] = useState(true);
+    const [countdown, setCountdown] = useState(0);
+    const [verificationContext, setVerificationContext] = useState("signup"); // "signup", "login", "resetPassword"
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -44,10 +51,56 @@ const EmailVerificationPage = () => {
         const verificationCode = code.join("");
         try {
             await dispatch(verifyEmail(verificationCode)).unwrap();
-            navigate("/");
+            navigate(getSuccessRedirect());
             toast.success("Email verified successfully");
         } catch (error) {
             toast.error(error.message || "Error verifying email");
+        }
+    };
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const emailParam = params.get("email");
+        const contextParam = params.get("context"); // "signup", "login", "resetPassword"
+
+        if (contextParam) {
+            setVerificationContext(contextParam);
+        }
+
+        if (emailParam) {
+            setEmail(emailParam);
+        } else {
+            const storedEmail = localStorage.getItem("pendingVerificationEmail");
+            if (storedEmail) {
+                setEmail(storedEmail);
+            }
+        }
+    }, [location]);
+
+    const handleResendCode = async () => {
+        if (!email || resendingCode || !canResend) return;
+
+        try {
+            setResendingCode(true);
+            await dispatch(resendVerification(email)).unwrap();
+            toast.success("A new verification code has been sent to your email");
+
+            setCanResend(false);
+            setCountdown(60);
+            const timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setCanResend(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } catch (error) {
+            toast.error(error || "Failed to resend verification code");
+        } finally {
+            setResendingCode(false);
         }
     };
 
@@ -57,6 +110,28 @@ const EmailVerificationPage = () => {
         }
         // eslint-disable-next-line
     }, [code]);
+
+    const getContextMessage = () => {
+        switch (verificationContext) {
+            case "resetPassword":
+                return "Verify your email before resetting your password";
+            case "login":
+                return "Verify your email before logging in";
+            default:
+                return "Verify your email address to activate your account";
+        }
+    };
+
+    const getSuccessRedirect = () => {
+        switch (verificationContext) {
+            case "resetPassword":
+                return "/forgot-password";
+            case "login":
+                return "/login";
+            default:
+                return "/";
+        }
+    };
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary-100 via-neutral-50 to-primary-200 overflow-hidden px-4 sm:px-0">
@@ -83,7 +158,7 @@ const EmailVerificationPage = () => {
                         Verify Your Email
                     </h2>
                     <p className="text-neutral-500 text-center text-sm mt-1">
-                        Enter the 6-digit code sent to your email address.
+                        {getContextMessage()}
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6 w-full">
@@ -103,7 +178,9 @@ const EmailVerificationPage = () => {
                             />
                         ))}
                     </div>
-                    {error && <p className="text-red-500 font-semibold mt-2 text-center">{error}</p>}
+                    {error && <p className="text-red-500">
+                        {typeof error === 'object' ? error.message : error}
+                    </p>}
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -118,6 +195,35 @@ const EmailVerificationPage = () => {
                         {isLoading ? "Verifying..." : "Verify Email"}
                     </motion.button>
                 </form>
+                <div className="mt-4 flex flex-col items-center">
+                    <p className="text-sm text-gray-500 mb-2">
+                        Didn't receive the code?
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Confirm your email"
+                            className="px-3 py-2 border rounded-lg text-sm w-full sm:w-auto"
+                        />
+
+                        <button
+                            onClick={handleResendCode}
+                            disabled={resendingCode || !canResend || !email}
+                            className={`text-sm px-3 py-2 rounded-lg w-full sm:w-auto ${
+                                canResend && email ? "bg-primary-500 text-white" : "bg-gray-200 text-gray-500"
+                            }`}
+                        >
+                            {resendingCode
+                                ? "Sending..."
+                                : canResend
+                                ? "Resend Code"
+                                : `Wait ${countdown}s`}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -144,20 +144,27 @@ const LoginPage = () => {
     }
   }, [user, navigate]);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      toast.error("Please enter both email and password", {
-        style: {
-          background: "#22223b",
-          color: "#fff",
-          borderRadius: "10px",
-          fontWeight: "bold",
-        },
-      });
-      return;
+        toast.error("Please enter both email and password");
+        return;
     }
-    dispatch(login({ email, password }));
+
+    try {
+        await dispatch(login({ email, password })).unwrap();
+        // Successful login will redirect via useEffect
+    } catch (error) {
+        // Check if the error is for an unverified user
+        if (error && typeof error === 'object' && error.needsVerification) {
+            toast.error("Please verify your email before logging in");
+            
+            // Add this redirect with context parameter
+            setTimeout(() => {
+                navigate(`/verify-email?email=${encodeURIComponent(error.email)}&context=login`);
+            }, 1500);
+        }
+    }
   };
 
   return (
@@ -288,7 +295,7 @@ const LoginPage = () => {
             Login to your account to continue!
           </p>
         </div>
-        <form onSubmit={handleLogin} className="space-y-3 w-full" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-3 w-full" autoComplete="off">
           <InputField
             id="email"
             label="Email Address"
@@ -310,7 +317,9 @@ const LoginPage = () => {
               Forgot password?
             </Link>
           </div>
-          {error && <p className="text-red-500 font-semibold mb-2 text-center">{error}</p>}
+          {error && <p className="text-red-500 font-semibold mb-2 text-center">
+            {typeof error === 'object' ? error.message : error}
+          </p>}
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
