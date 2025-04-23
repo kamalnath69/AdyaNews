@@ -10,8 +10,7 @@ import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.routes.js";
 import articleRoutes from "./routes/article.route.js";
 import { User } from "./models/user.model.js"; // Import User model
-import { verifyToken} from "./middleware/verifyToken.js"; // Import auth middleware
-
+import { verifyToken } from "./middleware/verifyToken.js"; // Import auth middleware
 
 dotenv.config();
 
@@ -19,22 +18,37 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
+// Define allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:4173",
   "https://adyanews.onrender.com",
+  "https://adyanewsbackend.onrender.com"
 ];
 
-// Update your CORS configuration
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:4173", 
-    "https://adyanews.onrender.com"
-  ],
+// Create proper CORS options
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+// Apply CORS globally
+// Apply CORS globally including preflight requests
+app.use(cors(corsOptions));
+
+// Automatically handle preflight (OPTIONS) requests
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body
 app.use(express.urlencoded({ limit: '5mb', extended: true }));

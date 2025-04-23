@@ -91,50 +91,70 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-	
-	const { email, password } = req.body;
-	try {
-		const user = await User.findOne({ email });
-		if (!user) {
-			return res.status(400).json({ success: false, message: "Invalid credentials" });
-		}
-		const isPasswordValid = await bcryptjs.compare(password, user.password);
-		if (!isPasswordValid) {
-			return res.status(400).json({ success: false, message: "Invalid credentials" });
-		}
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
+        
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
 
-		// Generate token
-		const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-			expiresIn: "30d",
-		});
+        // Check if user is verified
+        if (!user.isVerified) {
+            // Generate a new verification code if needed
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verificationToken = verificationToken;
+            user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+            await user.save();
+            
+            // Send a new verification email
+            await sendVerificationEmail(user.email, verificationToken);
+            
+            // Return special response for unverified users
+            return res.status(403).json({ 
+                success: false, 
+                message: "Please verify your email before logging in",
+                needsVerification: true,
+                email: user.email
+            });
+        }
 
-		// Set cookie (still useful for same-domain)
-		res.cookie("token", token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-			maxAge: 30 * 24 * 60 * 60 * 1000,
-		});
+        // Generate token
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "30d",
+        });
 
-		// Also return token in response body for localStorage
-		res.status(200).json({
-			success: true,
-			message: "Logged in successfully",
-			token, // Include token here
-			user: {
-				_id: user._id,
-				name: user.name,
-				email: user.email,
-				isVerified: user.isVerified,
-				role: user.role,
-				hasSelectedLanguage: user.language ? true : false,
-				hasSelectedInterests: user.interests && user.interests.length > 0,
-			},
-		});
-	} catch (error) {
-		console.log("Error in login ", error);
-		res.status(400).json({ success: false, message: error.message });
-	}
+        // Set cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+
+        // Return token in response body for localStorage
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            token,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                isVerified: user.isVerified,
+                role: user.role,
+                hasSelectedLanguage: user.language ? true : false,
+                hasSelectedInterests: user.interests && user.interests.length > 0,
+            },
+        });
+    } catch (error) {
+        console.log("Error in login ", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
 };
 
 export const logoutUser = (req, res) => {
@@ -158,7 +178,27 @@ export const forgotPassword = async (req, res) => {
             return res.status(400).json({ success: false, message: "User not found" });
         }
 
-        // Generate reset token
+        // Check if user is verified
+        if (!user.isVerified) {
+            // Generate a new verification code
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verificationToken = verificationToken;
+            user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+            await user.save();
+            
+            // Send a new verification email
+            await sendVerificationEmail(user.email, verificationToken);
+            
+            // Return special response for unverified users
+            return res.status(403).json({ 
+                success: false, 
+                message: "Please verify your email before resetting your password",
+                needsVerification: true,
+                email: user.email
+            });
+        }
+
+        // Rest of the original code for verified users
         const resetToken = crypto.randomBytes(20).toString("hex");
         const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
@@ -167,17 +207,14 @@ export const forgotPassword = async (req, res) => {
 
         await user.save();
 
-        // Fix: Use hardcoded URL if CLIENT_URL is not defined
         const clientURL = process.env.CLIENT_URL || "https://adyanews.onrender.com";
-		
         const resetURL = `${clientURL}/#/reset-password/${resetToken}`;
-        console.log("Reset URL: ", resetURL);
-        // send email
+        
         await sendPasswordResetEmail(user.email, resetURL);
 
         res.status(200).json({ success: true, message: "Password reset link sent to your email" });
     } catch (error) {
-        console.log("Error in forgotPassword ", error);
+        console.log("Error in forgotPassword:", error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -225,4 +262,33 @@ export const checkAuth = async (req, res) => {
 		console.log("Error in checkAuth ", error);
 		res.status(400).json({ success: false, message: error.message });
 	}
+};
+
+export const resendVerification = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: "Email already verified" });
+        }
+
+        // Generate new verification token
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationToken = verificationToken;
+        user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+        await user.save();
+
+        await sendVerificationEmail(user.email, verificationToken);
+
+        res.status(200).json({ success: true, message: "Verification email sent" });
+    } catch (error) {
+        console.log("Error in resendVerification:", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
 };
