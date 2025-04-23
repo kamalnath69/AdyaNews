@@ -26,7 +26,7 @@ const allowedOrigins = [
   "https://adyanewsbackend.onrender.com"
 ];
 
-// Create proper CORS options
+// Create proper CORS options - FIXED version
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl requests)
@@ -38,17 +38,29 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  preflightContinue: false,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   optionsSuccessStatus: 204
 };
 
 // Apply CORS globally
-// Apply CORS globally including preflight requests
 app.use(cors(corsOptions));
 
-// Automatically handle preflight (OPTIONS) requests
-app.options('*', cors(corsOptions));
+// Simple OPTIONS pre-flight handler
+app.options('*', (req, res) => {
+  // Read the origin from the request
+  const origin = req.headers.origin;
+  
+  // Only set Access-Control-Allow-Origin for allowed origins
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(204).end();
+});
 
 app.use(express.json({ limit: '5mb' })); // allows us to parse incoming requests:req.body
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
